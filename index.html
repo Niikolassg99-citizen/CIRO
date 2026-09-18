@@ -1,0 +1,2529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIRO — Consola del Proyecto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600;700&display=swap">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Paleta heredada de 06-presentacion-ciro.html — identidad CIRO (ivory + ink obsidian + gold) */
+    --bg-1: #EEF0F2;
+    --bg-2: #E6E9ED;
+    --bg-3: #DEE2E7;
+    --surface: #FFFFFF;
+    --surface-hover: #F8F4E9;
+    --surface-pending: #F5F6F7;
+    --border: rgba(22,33,62,0.18);
+    --border-soft: rgba(22,33,62,0.10);
+    --border-pending: rgba(22,33,62,0.24);
+    --ink: #16213E;
+    --ink-muted: rgba(22,33,62,0.70);
+    --ink-faint: rgba(22,33,62,0.46);
+    --gold: #9C7519;
+    --gold-light: #7A5B12;
+    --gold-dark: #5C4410;
+    --axis-1: #0C7DB0;
+    --axis-2: #A66A00;
+    --axis-3: #C0392B;
+    --axis-4: #1E8F5F;
+    --axis-5: #6B4FA0;
+    --axis-6: #128C82;
+    --pmo-legal: #A67C1E;
+    --pmo-fin: #1F5C99;
+    --pmo-eff: #2F7A4F;
+    /* Extensiones propias de esta consola: clasificación PMO y estado de cierre */
+    --rank-critica: #A5312A;
+    --rank-alta: #B15A2A;
+    --rank-backlog: #4B6584;
+    --rank-none: #8A8F98;
+    --status-ok: #1E8F5F;
+    --status-warn: #A66A00;
+    --status-pending: #8A8F98;
+    --status-blocked: #A5312A;
+  }
+
+  html { background: var(--bg-1); }
+
+  body {
+    background: var(--bg-1);
+    color: var(--ink);
+    font-family: 'Raleway', 'Segoe UI', sans-serif;
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--gold-light); }
+  strong { font-weight: 600; }
+  em { font-style: italic; color: var(--ink-muted); }
+
+  ::selection { background: rgba(156,117,25,0.25); color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; border-radius: 2px; }
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+  }
+
+  .ciro-tool {
+    position: relative;
+    min-height: 100vh;
+    background:
+      radial-gradient(560px 420px at 6% -6%, rgba(156,117,25,0.07), transparent 62%),
+      radial-gradient(520px 460px at 98% 4%, rgba(22,33,62,0.05), transparent 58%),
+      linear-gradient(165deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+  }
+
+  /* ---------- Header ---------- */
+  .topbar {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .topbar-inner { max-width: 1180px; margin: 0 auto; }
+
+  .brand-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand-mark { width: 48px; height: 44px; object-fit: contain; flex: none; filter: drop-shadow(0 2px 4px rgba(22,33,62,0.18)); }
+  .brand-text { display: flex; flex-direction: column; gap: 2px; }
+  .brand-eyebrow {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold);
+  }
+  .brand-title {
+    font-family: 'Cinzel', Georgia, serif; font-weight: 700; font-size: clamp(28px, 4.2vw, 38px);
+    color: var(--gold-light); letter-spacing: 3px; line-height: 1;
+  }
+
+  .tool-badge {
+    margin-left: auto;
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 14px; border-radius: 999px;
+    background: var(--surface-pending); border: 1px solid var(--border-pending);
+    color: var(--ink-muted); font-size: 12px; font-weight: 500; letter-spacing: .3px;
+    white-space: nowrap;
+  }
+  .tool-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); flex: none; }
+
+  .brand-desc {
+    max-width: 760px; margin-top: 16px; font-size: 15px; line-height: 1.7; color: var(--ink-muted);
+  }
+
+  .fact-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .fact-chip {
+    display: inline-flex; align-items: baseline; gap: 6px;
+    padding: 8px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border-soft);
+    font-size: 13px; color: var(--ink-muted);
+  }
+  .fact-chip b { font-family: 'Raleway', sans-serif; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* ---------- Nav ---------- */
+  .nav-wrap {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(238,240,242,0.92); backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .nav-scroll {
+    max-width: 1180px; margin: 0 auto; display: flex; gap: 8px;
+    padding: 10px 24px; overflow-x: auto; scrollbar-width: thin;
+  }
+  .nav-pill {
+    flex: none; appearance: none; border: 1px solid transparent; background: transparent; cursor: pointer;
+    font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .2px;
+    color: var(--ink-muted); padding: 8px 15px; border-radius: 999px; transition: background .15s, color .15s, border-color .15s;
+    white-space: nowrap;
+  }
+  .nav-pill:hover { background: var(--surface-hover); color: var(--ink); }
+  .nav-pill[aria-selected="true"] {
+    background: var(--ink); color: var(--bg-1); border-color: var(--ink);
+  }
+
+  /* ---------- Role bar (vistas por nivel de gobierno) ---------- */
+  .role-wrap {
+    background: rgba(156,117,25,0.06); border-bottom: 1px solid var(--border-soft);
+  }
+  .role-scroll {
+    max-width: 1180px; margin: 0 auto; display: flex; align-items: center; gap: 10px;
+    padding: 9px 24px; overflow-x: auto; scrollbar-width: thin;
+  }
+  .role-label {
+    flex: none; font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--gold-light);
+  }
+  .role-pill {
+    flex: none; appearance: none; border: 1px solid var(--border); background: var(--surface); cursor: pointer;
+    font-family: 'Raleway', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: .2px;
+    color: var(--ink-muted); padding: 6px 13px; border-radius: 999px; transition: background .15s, color .15s, border-color .15s;
+    white-space: nowrap;
+  }
+  .role-pill:hover { border-color: var(--gold); color: var(--ink); }
+  .role-pill[aria-pressed="true"] { background: var(--gold-light); color: #fff; border-color: var(--gold-light); }
+  .role-banner {
+    display: flex; align-items: flex-start; gap: 10px; margin-bottom: 22px; padding: 13px 16px;
+    border-radius: 10px; background: var(--surface-hover); border: 1px solid var(--border-pending);
+  }
+  .role-banner b { color: var(--ink); }
+  .role-banner-icon { flex: none; font-size: 15px; line-height: 1.5; }
+  .role-banner p { font-size: 13px; color: var(--ink-muted); line-height: 1.6; }
+
+  /* ---------- Dinamismo compartido con 06-presentacion-ciro.html ---------- */
+  .stat-tile, .card, .panel-card { transition: transform .18s, box-shadow .18s; }
+  .stat-tile:hover, .card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(22,33,62,0.08); }
+  .panel-card:hover { box-shadow: 0 10px 24px rgba(22,33,62,0.09); }
+
+  /* ---------- Main / views ---------- */
+  main { max-width: 1180px; margin: 0 auto; padding: 36px 24px 80px; }
+  .view { display: none; }
+  .view.is-active { display: block; animation: fade-in .25s ease-out; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .view-head { margin-bottom: 28px; max-width: 760px; }
+  .view-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .view-title { font-family: 'Cinzel', Georgia, serif; font-weight: 600; font-size: clamp(22px, 3vw, 30px); color: var(--ink); text-wrap: balance; }
+  .view-intro { margin-top: 10px; font-size: 15px; line-height: 1.7; color: var(--ink-muted); text-wrap: balance; }
+
+  .section { margin-top: 34px; }
+  .section:first-child { margin-top: 0; }
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-faint);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ""; flex: 1; height: 1px; background: var(--border-soft); }
+
+  /* ---------- Stat tiles ---------- */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .stat-tile {
+    background: var(--surface); border: 1px solid var(--border-soft); border-radius: 12px; padding: 16px 18px;
+  }
+  .stat-num { font-family: 'Cinzel', Georgia, serif; font-size: 26px; font-weight: 700; color: var(--gold-light); font-variant-numeric: tabular-nums; line-height: 1; }
+  .stat-label { margin-top: 8px; font-size: 12.5px; color: var(--ink-muted); line-height: 1.4; }
+  .stat-tile.is-warn .stat-num { color: var(--status-warn); }
+  .stat-tile.is-blocked .stat-num { color: var(--status-blocked); }
+
+  /* ---------- Grids / cards ---------- */
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 820px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border-soft); border-radius: 12px; padding: 18px 20px;
+  }
+  .card-title { font-weight: 700; font-size: 14.5px; color: var(--ink); margin-bottom: 6px; }
+  .card p { font-size: 13.5px; color: var(--ink-muted); line-height: 1.65; }
+  .card-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+
+  .axis-card { border-left: 4px solid var(--accent, var(--gold)); }
+  .axis-card summary::marker { content: ""; }
+  .axis-card summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+  }
+  .axis-card summary::-webkit-details-marker { display: none; }
+  .axis-num {
+    font-family: 'Cinzel', Georgia, serif; font-weight: 700; font-size: 13px; color: var(--accent, var(--gold));
+    border: 1px solid currentColor; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .axis-heading { flex: 1; }
+  .axis-title { font-weight: 700; font-size: 14.5px; color: var(--ink); }
+  .axis-sub { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+  .axis-chevron { color: var(--ink-faint); font-size: 12px; transition: transform .18s; flex: none; }
+  details[open] .axis-chevron { transform: rotate(90deg); }
+  .axis-body { padding: 0 20px 20px 58px; display: flex; flex-direction: column; gap: 14px; }
+  .axis-group-title { font-weight: 600; font-size: 13px; color: var(--ink); margin-bottom: 6px; }
+  .axis-body ul { padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+  .axis-body li { font-size: 13.5px; color: var(--ink-muted); line-height: 1.55; }
+  .axis-body li b { color: var(--ink); font-weight: 600; }
+
+  details.plain { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 12px; }
+  details.plain summary { list-style: none; cursor: pointer; padding: 15px 18px; font-weight: 700; font-size: 13.5px; color: var(--ink); display: flex; align-items: center; gap: 10px; }
+  details.plain summary::-webkit-details-marker { display: none; }
+  details.plain summary::before { content: "›"; font-size: 18px; color: var(--gold); transition: transform .18s; }
+  details.plain[open] summary::before { transform: rotate(90deg); }
+  details.plain .axis-body { padding: 0 18px 18px; }
+
+  /* ---------- Label/value definition grid ---------- */
+  .lv-grid { display: grid; grid-template-columns: minmax(140px, 220px) 1fr; gap: 10px 18px; }
+  .lv-grid dt { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--ink-faint); padding-top: 2px; }
+  .lv-grid dd { font-size: 13.5px; color: var(--ink-muted); line-height: 1.6; }
+  @media (max-width: 600px) { .lv-grid { grid-template-columns: 1fr; } .lv-grid dt { padding-top: 10px; } }
+
+  /* ---------- Flow chips ---------- */
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .flow-step {
+    background: var(--surface); border: 1px solid var(--border-soft); border-radius: 8px;
+    padding: 9px 14px; font-size: 12.5px; font-weight: 600; color: var(--ink);
+  }
+  .flow-arrow { color: var(--gold); font-size: 14px; }
+  .flow.is-loop::after {
+    content: "↺ ciclo continuo — retroalimenta al primer paso";
+    font-size: 12px; color: var(--ink-faint); font-style: italic; margin-left: 4px;
+  }
+
+  /* ---------- Governance chain ---------- */
+  .chain { display: flex; flex-direction: column; gap: 0; }
+  .chain-level {
+    display: flex; align-items: flex-start; gap: 16px; padding: 14px 0; border-bottom: 1px dashed var(--border-soft);
+  }
+  .chain-level:last-child { border-bottom: none; }
+  .chain-connector { display: flex; flex-direction: column; align-items: center; flex: none; width: 20px; }
+  .chain-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); margin-top: 6px; }
+  .chain-body { flex: 1; }
+  .chain-name { font-weight: 700; font-size: 14px; color: var(--ink); }
+  .chain-desc { font-size: 13px; color: var(--ink-muted); margin-top: 3px; line-height: 1.6; }
+
+  /* ---------- Quote / note callouts ---------- */
+  .quote {
+    border-left: 3px solid var(--gold); padding: 12px 18px; font-size: 14.5px; color: var(--ink);
+    background: var(--surface-hover); border-radius: 0 10px 10px 0; line-height: 1.65;
+  }
+  .note {
+    display: flex; gap: 10px; padding: 13px 16px; border-radius: 10px;
+    background: var(--surface-pending); border: 1px dashed var(--border-pending);
+    font-size: 13px; color: var(--ink-muted); line-height: 1.6;
+  }
+  .note b { color: var(--ink); }
+  .note::before { content: "◆"; color: var(--ink-faint); font-size: 10px; line-height: 1.9; flex: none; }
+
+  /* ---------- Badges ---------- */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: .3px; white-space: nowrap;
+  }
+  .badge--critica { background: rgba(165,49,42,0.12); color: var(--rank-critica); }
+  .badge--alta { background: rgba(177,90,42,0.12); color: var(--rank-alta); }
+  .badge--backlog { background: rgba(75,101,132,0.12); color: var(--rank-backlog); }
+  .badge--none { background: rgba(138,143,152,0.14); color: var(--rank-none); }
+  .badge--ok { background: rgba(30,143,95,0.12); color: var(--status-ok); }
+  .badge--warn { background: rgba(166,106,0,0.12); color: var(--status-warn); }
+  .badge--pending { background: rgba(138,143,152,0.14); color: var(--status-pending); }
+  .badge--blocked { background: rgba(165,49,42,0.12); color: var(--status-blocked); }
+  .badge--tie { background: rgba(156,117,25,0.14); color: var(--gold-light); }
+
+  /* ---------- Tables ---------- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border-soft); border-radius: 12px; background: var(--surface); }
+  table.data-table { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 13px; }
+  table.data-table th, table.data-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
+  table.data-table thead th {
+    background: var(--bg-2); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px;
+    color: var(--ink-faint); position: sticky; top: 0; white-space: nowrap;
+  }
+  table.data-table tbody tr:last-child td { border-bottom: none; }
+  table.data-table tbody tr:hover { background: var(--surface-hover); }
+  table.data-table td.num, table.data-table th.num { font-variant-numeric: tabular-nums; text-align: center; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--ink); }
+  th.sortable .arrow { margin-left: 4px; opacity: .35; font-size: 10px; }
+  th.sortable.is-active .arrow { opacity: 1; color: var(--gold); }
+  tr.is-tied td:first-child { box-shadow: inset 3px 0 0 var(--gold); }
+  tr.is-cut { opacity: .55; }
+  tr.cut-divider td { padding: 6px 14px; background: var(--bg-2); font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--ink-faint); text-align: center; }
+
+  .score-bar { width: 84px; height: 7px; border-radius: 4px; background: var(--bg-3); overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; }
+  .score-cell { display: flex; align-items: center; gap: 8px; }
+  .score-pct { font-weight: 700; font-variant-numeric: tabular-nums; width: 34px; text-align: right; }
+
+  .crit-cell { width: 34px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; }
+
+  /* ---------- Backlog controls ---------- */
+  .backlog-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .search-input {
+    flex: 1 1 220px; min-width: 180px; padding: 9px 14px; border-radius: 9px; border: 1px solid var(--border);
+    background: var(--surface); font-family: 'Raleway', sans-serif; font-size: 13.5px; color: var(--ink);
+  }
+  .search-input::placeholder { color: var(--ink-faint); }
+  .filter-chip {
+    appearance: none; cursor: pointer; border: 1px solid var(--border); background: var(--surface);
+    padding: 7px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: var(--ink-muted);
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .filter-chip[aria-pressed="true"] { background: var(--ink); color: var(--bg-1); border-color: var(--ink); }
+  .filter-count { font-size: 12.5px; color: var(--ink-faint); margin-left: auto; }
+
+  /* ---------- Calculadora de evaluación económica ---------- */
+  .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field.is-span2 { grid-column: span 2; }
+  @media (max-width: 640px) { .field.is-span2 { grid-column: span 1; } }
+  .field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-faint); }
+  .field input, .field select, .field textarea {
+    padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface);
+    font-family: 'Raleway', sans-serif; font-size: 13.5px; color: var(--ink);
+  }
+  .field textarea { resize: vertical; min-height: 56px; font-family: inherit; }
+  .field-hint { font-size: 11.5px; color: var(--ink-faint); line-height: 1.5; }
+
+  .toggle-row { display: flex; gap: 10px; max-width: 320px; }
+  .toggle-btn {
+    flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface);
+    font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 600; color: var(--ink-muted); cursor: pointer;
+  }
+  .toggle-btn[aria-pressed="true"] { background: var(--ink); color: var(--bg-1); border-color: var(--ink); }
+
+  .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .result-tile { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 12px; padding: 14px 16px; }
+  .result-tile .r-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-faint); }
+  .result-tile .r-value { font-family: 'Cinzel', Georgia, serif; font-size: 19px; font-weight: 700; color: var(--gold-light); margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .result-tile .r-note { font-size: 11px; color: var(--ink-faint); margin-top: 4px; line-height: 1.4; }
+  .result-tile.is-na .r-value { color: var(--ink-faint); font-size: 14px; }
+
+  .form-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .btn-primary {
+    padding: 10px 18px; border-radius: 9px; border: none; background: var(--gold-light); color: #fff;
+    font-family: 'Raleway', sans-serif; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: filter .15s;
+  }
+  .btn-primary:hover { filter: brightness(1.1); }
+  .btn-secondary {
+    padding: 10px 18px; border-radius: 9px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-muted);
+    font-family: 'Raleway', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background .15s, color .15s;
+  }
+  .btn-secondary:hover { background: var(--surface-hover); color: var(--ink); }
+  .icon-btn {
+    border: none; background: transparent; cursor: pointer; color: var(--ink-faint); font-size: 12.5px; padding: 4px 8px; border-radius: 6px;
+  }
+  .icon-btn:hover { background: var(--surface-hover); color: var(--ink); }
+
+  /* ---------- Panels ---------- */
+  .panel-card { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 14px; overflow: hidden; }
+  .panel-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border-soft); }
+  .panel-num { font-family: 'Cinzel', Georgia, serif; font-weight: 700; font-size: 13px; color: var(--gold); }
+  .panel-title { font-weight: 700; font-size: 15px; color: var(--ink); }
+  .panel-sub { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+  .panel-body { padding: 4px 0; }
+  .panel-empty { padding: 26px 20px; text-align: center; font-size: 13px; color: var(--ink-faint); }
+
+  /* ---------- Checklist ---------- */
+  .checklist { display: flex; flex-direction: column; }
+  .checklist-row { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border-soft); }
+  .checklist-row:last-child { border-bottom: none; }
+  .checklist-num { font-size: 11.5px; color: var(--ink-faint); font-variant-numeric: tabular-nums; width: 20px; flex: none; padding-top: 2px; }
+  .checklist-main { flex: 1; }
+  .checklist-title { font-weight: 600; font-size: 13.5px; color: var(--ink); }
+  .checklist-note { font-size: 12.5px; color: var(--ink-muted); margin-top: 3px; line-height: 1.55; }
+
+  .progressbar { height: 8px; border-radius: 5px; background: var(--bg-3); overflow: hidden; display: flex; }
+  .progressbar > span { height: 100%; }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 1px solid var(--border-soft); padding: 26px 24px 40px; }
+  .footer-inner { max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; justify-content: space-between; font-size: 12px; color: var(--ink-faint); }
+  .footer-inner b { color: var(--ink-muted); }
+  .footer-logo { height: 48px; width: auto; opacity: .85; flex: none; }
+</style>
+</head>
+<body>
+
+<div class="ciro-tool">
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-row">
+        <img class="brand-mark" src="crown-ciro.png" alt="Escudo CIRO — Coordinadora de Tanques">
+        <div class="brand-text">
+          <span class="brand-eyebrow">Proyectos Estratégicos · Mundo Analista de Procesos CT</span>
+          <span class="brand-title">CIRO</span>
+        </div>
+        <span class="tool-badge">Herramienta de gestión CIRO</span>
+      </div>
+      <p class="brand-desc">
+        <b>Control Integral Racional de Operaciones.</b> Herramienta de trabajo de CIRO para Coordinadora
+        de Tanques S.A.S. — gobierno, normativa, evaluación económica y seguimiento de iniciativas en un
+        solo lugar.
+      </p>
+    </div>
+  </header>
+
+  <div class="role-wrap">
+    <div class="role-scroll" id="role-scroll">
+      <span class="role-label">Vista para:</span>
+      <button class="role-pill" data-role="pmo" aria-pressed="true">PMO</button>
+      <button class="role-pill" data-role="gobierno" aria-pressed="false">Gobierno CIRO</button>
+    </div>
+  </div>
+
+  <nav class="nav-wrap">
+    <div class="nav-scroll" id="nav-scroll" role="tablist" aria-label="Secciones de CIRO">
+      <button class="nav-pill" data-view="resumen" data-roles="pmo" role="tab" aria-selected="true">Resumen</button>
+      <button class="nav-pill" data-view="marco" data-roles="pmo" role="tab" aria-selected="false">Marco general</button>
+      <button class="nav-pill" data-view="f1" data-roles="pmo gobierno" role="tab" aria-selected="false">Panel normativo</button>
+      <button class="nav-pill" data-view="f2" data-roles="pmo gobierno" role="tab" aria-selected="false">Panel económico</button>
+      <button class="nav-pill" data-view="estructura" data-roles="pmo gobierno" role="tab" aria-selected="false">Panel estructura</button>
+      <button class="nav-pill" data-view="f4" data-roles="pmo gobierno" role="tab" aria-selected="false">Panel informativo</button>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ============ RESUMEN ============ -->
+    <section class="view is-active" id="view-resumen">
+      <div class="view-head">
+        <div class="view-eyebrow">Resumen</div>
+        <h2 class="view-title">CIRO — Control Integral Racional de la Operación</h2>
+        <p class="view-intro">El modelo transversal de gobierno y transformación de Coordinadora de Tanques
+          S.A.S. Articula tres ejes — <b style="color:var(--ink)">Información → Procesos → Dinámica</b> —
+          para dar seguimiento, evaluar y priorizar las iniciativas de mejora, automatización y tecnología
+          de la compañía. No es una nueva área organizacional: es una forma de gobernar lo que ya existe.</p>
+      </div>
+
+      <div class="role-banner" id="role-banner">
+        <span class="role-banner-icon">◆</span>
+        <p id="role-banner-text"></p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">¿Para qué sirve?</div>
+        <div class="card">
+          <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.7">CIRO permite
+            <b style="color:var(--ink)">identificar</b> iniciativas, <b style="color:var(--ink)">entender</b>
+            oportunidades de transformación, <b style="color:var(--ink)">evaluarlas</b>,
+            <b style="color:var(--ink)">cuantificar</b> su impacto, <b style="color:var(--ink)">priorizarlas</b>,
+            darles <b style="color:var(--ink)">seguimiento</b>, <b style="color:var(--ink)">medir</b>
+            resultados y facilitar la <b style="color:var(--ink)">toma de decisiones</b>.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Madurez del modelo</div>
+        <div class="stat-grid">
+          <div class="stat-tile"><div class="stat-num" data-ciro-stat="total">21</div><div class="stat-label">Puntos evaluados</div></div>
+          <div class="stat-tile"><div class="stat-num" data-ciro-stat="ok">15</div><div class="stat-label">Completos</div></div>
+          <div class="stat-tile is-warn"><div class="stat-num" data-ciro-stat="warn">5</div><div class="stat-label">Parciales</div></div>
+          <div class="stat-tile is-blocked"><div class="stat-num" data-ciro-stat="blocked">1</div><div class="stat-label">Pendiente / bloqueado</div></div>
+        </div>
+        <div style="margin-top:14px" class="progressbar" aria-hidden="true">
+          <span data-ciro-bar="ok" style="width:71.4%; background:var(--status-ok)"></span>
+          <span data-ciro-bar="warn" style="width:23.8%; background:var(--status-warn)"></span>
+          <span data-ciro-bar="blocked" style="width:4.8%; background:var(--status-blocked)"></span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Portafolio</div>
+        <div class="stat-grid">
+          <div class="stat-tile"><div class="stat-num">148</div><div class="stat-label">Iniciativas identificadas</div></div>
+          <div class="stat-tile"><div class="stat-num">160</div><div class="stat-label">Iniciativas calificadas</div></div>
+          <div class="stat-tile"><div class="stat-num">16</div><div class="stat-label">Candidatos sin ambigüedad en los primeros cupos</div></div>
+          <div class="stat-tile"><div class="stat-num">4</div><div class="stat-label">Cupos sujetos a decisión del Gobierno CIRO</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Valor económico cuantificado</div>
+        <div class="stat-grid" id="resumen-valor"></div>
+        <div class="quote" style="margin-top:14px">Estos resultados corresponden a iniciativas que ya
+          cuentan con información económica registrada en CIRO y se actualizan a partir de los datos
+          disponibles en la herramienta.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Los tres ejes de CIRO</div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-eyebrow" style="color:var(--axis-1)">Información</div>
+            <p><b style="color:var(--ink)">Qué sabemos y cómo medimos.</b> Estado, impacto, resultados,
+              indicadores, recursos, beneficios y riesgos.</p>
+          </div>
+          <div class="card">
+            <div class="card-eyebrow" style="color:var(--axis-4)">Procesos</div>
+            <p><b style="color:var(--ink)">Cómo funciona y se transforma Coordinadora de Tanques.</b>
+              Entendimiento, levantamiento, análisis, diseño, documentación, optimización y transformación
+              de procesos.</p>
+          </div>
+          <div class="card">
+            <div class="card-eyebrow" style="color:var(--pmo-legal)">Dinámica</div>
+            <p><b style="color:var(--ink)">Cómo CIRO mueve las iniciativas.</b> Recibe, evalúa, prioriza,
+              asigna, ejecuta, hace seguimiento, decide y mide resultados.</p>
+          </div>
+        </div>
+        <div class="quote" style="margin-top:14px">
+          Información permite conocer y medir → Procesos permite entender y transformar → Dinámica permite
+          ejecutar, decidir y mejorar.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Caso destacado de transformación</div>
+        <div class="card">
+          <div class="card-title">Automatización de consulta de conductores activos — SIMIT</div>
+          <p style="font-size:13px; color:var(--ink-muted); margin-top:2px"><b style="color:var(--ink)">Área:</b> Jurídica
+            &nbsp;·&nbsp; <b style="color:var(--ink)">Tecnología:</b> UiPath RPA</p>
+          <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.65; margin-top:10px">La
+            iniciativa automatiza la verificación mensual de conductores activos en SIMIT.</p>
+          <div class="stat-grid" style="margin-top:14px">
+            <div class="stat-tile"><div class="stat-num">210</div><div class="stat-label">Conductores</div></div>
+            <div class="stat-tile"><div class="stat-num">11h → 40min</div><div class="stat-label">Tiempo por ejecución</div></div>
+            <div class="stat-tile"><div class="stat-num">93,9%</div><div class="stat-label">Reducción de tiempo</div></div>
+            <div class="stat-tile"><div class="stat-num">124h</div><div class="stat-label">Capacidad liberada / año</div></div>
+          </div>
+          <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.65; margin-top:14px">Este caso
+            permite visualizar cómo CIRO conecta una iniciativa de transformación con su medición operativa
+            y económica.</p>
+          <div class="form-actions" style="margin-top:14px">
+            <button type="button" class="btn-primary" onclick="window.ciroVerFicha()">Ver iniciativa</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Próximos pasos</div>
+        <div class="card">
+          <ul style="padding-left:18px; display:flex; flex-direction:column; gap:8px">
+            <li style="font-size:13.5px; color:var(--ink-muted)">Consolidar la fuente maestra de información.</li>
+            <li style="font-size:13.5px; color:var(--ink-muted)">Continuar la incorporación de casos económicos.</li>
+            <li style="font-size:13.5px; color:var(--ink-muted)">Resolver las decisiones pendientes del portafolio.</li>
+            <li style="font-size:13.5px; color:var(--ink-muted)">Fortalecer la integración de información.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MARCO GENERAL ============ -->
+    <section class="view" id="view-marco">
+      <div class="view-head">
+        <div class="view-eyebrow">Marco general</div>
+        <h2 class="view-title">Identidad, ejes y metodología</h2>
+        <p class="view-intro">CIRO es un modelo transversal de gobierno y transformación de Coordinadora
+          de Tanques S.A.S. — no constituye una nueva área organizacional, sino una metodología que
+          articula las áreas ya existentes.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Alcance</div>
+        <p style="font-size:14px; color:var(--ink-muted); line-height:1.75; max-width:760px">
+          Articula la cultura estratégica en procesos, la mejora de esos procesos, la automatización, la
+          tecnología y la innovación de toda la compañía. Dentro de CIRO opera además una gestión tipo
+          <b style="color:var(--ink)">PMO</b> para la priorización de iniciativas y proyectos.
+        </p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Metodología — Design Thinking cíclico</div>
+        <div class="flow is-loop">
+          <span class="flow-step">1 · Empatizar</span><span class="flow-arrow">→</span>
+          <span class="flow-step">2 · Definir</span><span class="flow-arrow">→</span>
+          <span class="flow-step">3 · Idear</span><span class="flow-arrow">→</span>
+          <span class="flow-step">4 · Prototipar</span><span class="flow-arrow">→</span>
+          <span class="flow-step">5 · Testear</span>
+        </div>
+        <p style="margin-top:10px; font-size:13px; color:var(--ink-muted)">No es un recorrido lineal de una
+          sola pasada: los aprendizajes de Testear realimentan Empatizar/Definir, de forma continua — igual
+          que las 4 fases de desarrollo.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Desarrollo — 4 fases</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th class="num">Fase</th><th>Nombre</th><th>Estado</th><th>En esta consola</th></tr></thead>
+            <tbody>
+              <tr><td class="num">1</td><td>Normativa</td><td><span class="badge badge--ok">Desarrollada</span></td><td>Panel normativo</td></tr>
+              <tr><td class="num">2</td><td>Económica</td><td><span class="badge badge--ok">Desarrollada</span></td><td>Panel económico</td></tr>
+              <tr><td class="num">3</td><td>Estructura</td><td><span class="badge badge--ok">Desarrollada</span></td><td>Panel estructura</td></tr>
+              <tr><td class="num">4</td><td>Información</td><td><span class="badge badge--ok">Desarrollada</span></td><td>Panel informativo</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:10px; font-size:13px; color:var(--ink-muted)"><b style="color:var(--ink)">Naturaleza
+          cíclica:</b> las 4 fases no son una secuencia que se ejecuta una sola vez y se cierra — son un
+          ciclo de retroalimentación constante, igual que el Design Thinking.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Encargo recibido</div>
+        <div class="quote">Armar la gestión oficial de CIRO como proyecto integral de la compañía, que
+          abarque toda la cultura estratégica en procesos, mejora, automatización, tecnología e innovación
+          — incluyendo el componente PMO de priorización de iniciativas/proyectos.</div>
+      </div>
+    </section>
+
+    <!-- ============ FASE 1 — NORMATIVA ============ -->
+    <section class="view" id="view-f1">
+      <div class="view-head">
+        <div class="view-eyebrow">Panel normativo · Fase 1</div>
+        <h2 class="view-title">Marco normativo y legal</h2>
+        <p class="view-intro">Seis ejes regulatorios aplicables a la operación de CT. Para cada uno se
+          listan las obligaciones/requisitos que CIRO debe controlar o soportar.</p>
+      </div>
+      <div class="section" style="display:flex; flex-direction:column; gap:12px">
+
+        <details class="card axis-card" style="--accent:var(--axis-1)" open>
+          <summary>
+            <span class="axis-num">1</span>
+            <span class="axis-heading"><span class="axis-title">Transporte y Logística</span><span class="axis-sub">MinTransporte &amp; Supertransporte</span></span>
+            <span class="axis-chevron">›</span>
+          </summary>
+          <div class="axis-body">
+            <div>
+              <div class="axis-group-title">Decreto 1079 de 2015 (Único Reglamentario del Sector Transporte)</div>
+              <ul>
+                <li><b>Control del Plan de Viaje:</b> registrar y validar origen, destino, ruta autorizada y paradas permitidas.</li>
+                <li><b>Verificación de Habilitación de Vehículos:</b> bloquear la asignación de viajes a vehículos/remolques con Tarjeta de Operación vencida.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="axis-group-title">Resoluciones de actualización RNDC (2025/2026)</div>
+              <ul>
+                <li><b>Manifiesto Electrónico de Carga:</b> conexión API/Webservice para expedirlo antes de iniciar ruta.</li>
+                <li><b>Remesas Terrestres de Carga:</b> control digital por grupo químico y cliente transportado.</li>
+                <li><b>Reporte de Tiempos Logísticos (obligatorio):</b> capturar y transmitir 4 eventos por servicio — llegada a cargue, salida de cargue, llegada a descargue, salida de descargue.</li>
+                <li><b>Trayectos en Vacío:</b> registro de movimientos de tanques desocupados entre bases o hacia lavaderos.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="axis-group-title">Sistema SICE-TAC (costos eficientes)</div>
+              <ul><li><b>Validación de Tarifa Mínima:</b> cruzar el costo calculado frente al simulador oficial para no operar por debajo del costo regulado.</li></ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="card axis-card" style="--accent:var(--axis-2)">
+          <summary>
+            <span class="axis-num">2</span>
+            <span class="axis-heading"><span class="axis-title">Mercancías Peligrosas</span><span class="axis-sub">Gases, líquidos y químicos</span></span>
+            <span class="axis-chevron">›</span>
+          </summary>
+          <div class="axis-body">
+            <div>
+              <div class="axis-group-title">Decreto 1609 de 2002 (incorporado en Decreto 1079/2015)</div>
+              <ul>
+                <li><b>Repositorio de Tarjetas de Emergencia</b> por producto asignado, según los 12 grupos.</li>
+                <li><b>Handoff de Hojas de Seguridad (MSDS):</b> verificar que el conductor la posea antes de iniciar viaje.</li>
+                <li><b>Matriz de Incompatibilidad Química:</b> prohibir cargues consecutivos sin registro técnico de lavado intermedio si los productos reaccionan.</li>
+                <li><b>Rotulado y Señalización (NTC 1692):</b> checklist de diamantes de peligro y números UN (ej. UN 1203 Gasolina, UN 1830 Ácido Sulfúrico).</li>
+              </ul>
+            </div>
+            <div>
+              <div class="axis-group-title">Normas técnicas por naturaleza del producto</div>
+              <ul>
+                <li><b>NTC 2801 (líquidos inflamables):</b> validar polo a tierra operativo y válvulas de alivio antes de cargar Alcoholes/Monómeros/Combustibles.</li>
+                <li><b>Gases criogénicos y GLP:</b> control de presiones de carga, doble pared del tanque y calibración del manómetro.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="card axis-card" style="--accent:var(--axis-3)">
+          <summary>
+            <span class="axis-num">3</span>
+            <span class="axis-heading"><span class="axis-title">Seguridad Vial y Control Preoperacional</span><span class="axis-sub">Supertransporte</span></span>
+            <span class="axis-chevron">›</span>
+          </summary>
+          <div class="axis-body">
+            <div>
+              <div class="axis-group-title">Resolución 315 de 2013 y actualizaciones PESV</div>
+              <ul>
+                <li><b>Inspección Preoperacional Diaria Digital</b> — formulario preoperacional en el sistema.</li>
+                <li>Estado mecánico y de frenos del cabezote y remolque/tanque.</li>
+                <li>Inspección visual de empaques en tapas de llenado (manholes).</li>
+                <li>Estado y hermeticidad de válvulas de descarga de fondo y laterales.</li>
+                <li>Verificación de la línea de vida integrada al tanque.</li>
+                <li>Kit de Control de Derrames vigente (absorbentes, diques, herramientas antichispa).</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="card axis-card" style="--accent:var(--axis-4)">
+          <summary>
+            <span class="axis-num">4</span>
+            <span class="axis-heading"><span class="axis-title">Hidrocarburos y Biocombustibles</span><span class="axis-sub">Ministerio de Minas y Energía</span></span>
+            <span class="axis-chevron">›</span>
+          </summary>
+          <div class="axis-body">
+            <div>
+              <div class="axis-group-title">Decreto 4299 de 2005 y normativa SICOM</div>
+              <ul>
+                <li><b>Validación de Actores Autorizados (SICOM):</b> remitente y destinatario con código SICOM activo (Grupo 9 Combustibles, Grupo 8 Aceites/Biodiesel).</li>
+                <li><b>Guía de Ruta SICOM:</b> registro del número de guía dentro de los detalles del viaje.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="card axis-card" style="--accent:var(--axis-5)">
+          <summary>
+            <span class="axis-num">5</span>
+            <span class="axis-heading"><span class="axis-title">Precursores y Sustancias Restringidas</span><span class="axis-sub">MinJusticia / DIAN</span></span>
+            <span class="axis-chevron">›</span>
+          </summary>
+          <div class="axis-body">
+            <div>
+              <div class="axis-group-title">Resolución 0001 de 2015 (Consejo Nacional de Estupefacientes)</div>
+              <ul>
+                <li><b>Control de Cupos y Certificado de Carencia:</b> alerta de bloqueo si el viaje incluye productos controlados (Grupo 2 Aromáticos/Disolventes, Grupo 10 Ácidos/Alcoholes) sobre las cantidades exentas.</li>
+                <li><b>Rutas Autorizadas por MinJusticia:</b> validar que el trayecto siga las vías nacionales permitidas.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="axis-group-title">Resolución DIAN 000008 de 2026</div>
+              <ul><li><b>Monitoreo del Impuesto a la Operación de Carga:</b> calcular y trazar la tarifa del 0.1% sobre el valor del servicio de transporte terrestre de carga.</li></ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="card axis-card" style="--accent:var(--axis-6)">
+          <summary>
+            <span class="axis-num">6</span>
+            <span class="axis-heading"><span class="axis-title">Estándares Internacionales</span><span class="axis-sub">BASC · ISO 14001 · ISO 45001</span></span>
+            <span class="axis-chevron">›</span>
+          </summary>
+          <div class="axis-body">
+            <div>
+              <div class="axis-group-title">BASC — seguridad en la cadena de suministro</div>
+              <ul>
+                <li><b>Gestión de Riesgos en Ruta:</b> mapa de georutas permitidas, corredores seguros y zonas de alto riesgo.</li>
+                <li><b>Trazabilidad GPS obligatoria:</b> auditar desvíos de ruta, pérdidas de señal o paradas no autorizadas.</li>
+                <li><b>Debida diligencia de terceros:</b> validar antecedentes judiciales y centrales de riesgo de conductores propios y terceros.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="axis-group-title">ISO 14001 — gestión ambiental</div>
+              <ul><li><b>Trazabilidad del lavado de tanques:</b> exigir Certificado de Lavado de planta autorizada con PTAR antes de cambiar de producto.</li></ul>
+            </div>
+            <div>
+              <div class="axis-group-title">ISO 45001 — seguridad y salud en el trabajo</div>
+              <ul>
+                <li><b>Matriz de EPP</b> según el producto del viaje (ej. traje Tychem y respirador para Grupo 10).</li>
+                <li><b>Control de horas de conducción y fatiga:</b> pausas activas y horas máximas al volante.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+    <!-- ============ FASE 2 — ECONÓMICA ============ -->
+    <section class="view" id="view-f2">
+      <div data-roles-content="pmo">
+      <div class="view-head">
+        <div class="view-eyebrow">Panel económico · Fase 2</div>
+        <h2 class="view-title">Evaluación económica</h2>
+        <p class="view-intro">Los criterios financieros no son los mismos para todas las iniciativas —
+          están condicionados según la naturaleza de cada una.</p>
+      </div>
+        <div class="section">
+          <div class="section-label">Variables financieras y condición de aplicación</div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Variable</th><th>Condición</th></tr></thead>
+              <tbody>
+                <tr><td><b>OPEX</b></td><td>Obligatorio en <b>todas</b> las iniciativas — toda iniciativa consume operación, tenga o no inversión de capital.</td></tr>
+                <tr><td><b>CAPEX</b></td><td><b>Condicional</b> — solo si requiere inversión de capital (hardware, licencias, desarrollo externo, infraestructura).</td></tr>
+                <tr><td><b>TCO</b></td><td><b>No se utiliza</b> para iniciativas organizacionales de CIRO — se mantiene solo como convención general del rol para activos/tecnología.</td></tr>
+                <tr><td><b>ROI / VPN / TIR / Payback</b></td><td><b>Condicionales</b> — se reservan para iniciativas donde el CAPEX o el impacto financiero lo justifique.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Criterio de aplicación — decisión de cierre (28 ago 2026)</div>
+          <div class="note"><b>No hay umbral monetario fijo.</b> El análisis económico es proporcional al
+            tamaño e impacto de cada iniciativa: tamaño, inversión requerida, impacto esperado, riesgo,
+            beneficio potencial, complejidad y horizonte temporal. Reemplaza la propuesta descartada de
+            umbral fijo (Score ≥ 80%).</div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Responsabilidades económicas</div>
+          <dl class="lv-grid">
+            <dt>Área líder</dt><dd>Construye el caso económico inicial; aporta costos, beneficios y supuestos operativos.</dd>
+            <dt>Financiera / Contabilidad</dt><dd>Valida las cifras económicas y los criterios contables/financieros cuando corresponda.</dd>
+            <dt>PMO</dt><dd>Consolida y controla la información económica; estructura la comparación entre iniciativas.</dd>
+            <dt>Gobierno CIRO</dt><dd>Utiliza la información económica como insumo para tomar decisiones.</dd>
+          </dl>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Conexión con el PMO</div>
+          <p style="font-size:13.5px; color:var(--ink-muted); max-width:720px; line-height:1.7">
+            El criterio <b style="color:var(--pmo-fin)">Financiero — impacto en EBITDA (30%)</b> del modelo
+            de priorización se nutre de esta fase: cuando una iniciativa del backlog tenga cifras reales
+            (OPEX siempre, CAPEX/ROI/VPN/TIR/Payback si aplica), esas cifras reemplazan la estimación
+            cualitativa preliminar usada en la primera carga del backlog.
+          </p>
+        </div>
+      </div>
+
+      <div data-roles-content="gobierno">
+      <div class="view-head">
+        <div class="view-eyebrow">Panel económico</div>
+        <h2 class="view-title">Consolidación económica del portafolio</h2>
+        <p class="view-intro">Vista consolidada del valor económico asociado a las iniciativas de CIRO que
+          cuentan con información económica registrada. Permite consultar beneficios, capacidad liberada,
+          OPEX, CAPEX y resultados de la evaluación financiera cuando estos aplican.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Resumen económico del portafolio</div>
+        <div class="stat-grid" id="gob-econ-resumen"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Valor económico del portafolio</div>
+        <div class="quote" id="gob-econ-narrativa"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Iniciativas con información económica registrada</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Iniciativa</th><th>Área</th><th>Estado</th><th class="num">OPEX actual/año</th><th class="num">OPEX futuro/año</th><th class="num">Beneficio/mes</th><th class="num">Beneficio/año</th><th class="num">Capacidad liberada/año</th><th class="num">CAPEX</th><th>Evaluación financiera</th><th></th></tr></thead>
+            <tbody id="econ-portafolio-tbody"></tbody>
+          </table>
+        </div>
+        <div class="stat-grid" id="gob-econ-evaluacion" style="margin-top:14px"></div>
+      </div>
+
+      <div class="section">
+        <details class="plain">
+          <summary>Continuidad de la información</summary>
+          <div class="axis-body">
+            <p style="font-size:13px; color:var(--ink-muted); line-height:1.6">Genera un respaldo de la
+              información registrada para conservarla o trasladarla a otro punto de acceso.</p>
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" id="econ-exportar">Exportar</button>
+              <button type="button" class="btn-primary" id="econ-importar-btn">Importar</button>
+            </div>
+            <textarea id="econ-json" style="width:100%; min-height:110px; margin-top:12px; font-family:monospace; font-size:12px; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--ink)" placeholder="El respaldo generado aparece aquí. Para restaurar, ingresa el respaldo correspondiente y confirma."></textarea>
+          </div>
+        </details>
+      </div>
+      </div>
+    </section>
+
+    <!-- ============ FASE 3 — ESTRUCTURA ============ -->
+    <section class="view" id="view-f3">
+      <div data-roles-content="pmo">
+      <div class="view-head">
+        <div class="view-eyebrow">Panel estructura · Fases 3-4</div>
+        <h2 class="view-title">Gobierno, información, PMO, backlog y seguimiento</h2>
+        <p class="view-intro">Cómo se organiza CIRO, quién toma decisiones, cómo participan las áreas de
+          CT, cómo se prioriza el portafolio de iniciativas y cómo se le hace seguimiento — todo lo
+          "ya estructurado" de CIRO reunido en un solo lugar.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Cadena de gobierno — no crea una nueva área funcional</div>
+        <div class="card">
+          <div class="chain">
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">Gerencia General + Gerencia Administrativa y Operaciones</div><div class="chain-desc">Nivel directivo que orienta el marco y proporciona patrocinio institucional.</div></div></div>
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">Gobierno CIRO — Junta Directiva</div><div class="chain-desc">Máximo nivel de decisión: aprueba iniciativas estratégicas y prioridades del portafolio, resuelve lo que supera la capacidad del PMO, valida inversiones de alto impacto, revisa resultados generales.</div></div></div>
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">PMO CIRO</div><div class="chain-desc">Inicialmente a cargo del Analista de Procesos / responsable de CIRO. Administra el portafolio y el backlog, aplica Design Thinking, estructura iniciativas, construye el caso económico, coordina priorización, hace seguimiento y mantiene la herramienta viva de CIRO.</div></div></div>
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">Líderes de iniciativa</div><div class="chain-desc">Aportan conocimiento del proceso, validan el problema/oportunidad, participan en el diseño de la solución, coordinan la ejecución desde su área.</div></div></div>
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">14 áreas funcionales existentes de CT</div><div class="chain-desc">Relación matricial: CIRO no las reemplaza, coordina y gobierna las iniciativas que generan transformación, mejora o impacto transversal.
+              <br><span style="font-size:12px; color:var(--ink-faint)">01 Gerencia · 02 Financiera · 03 Operaciones · 04 Comercial · 05 Gestión Humana · 06 Gestión Administrativa · 07 Proyectos · 08 TICS · 09 Ambiental · 10 SISOA · 11 Seguridad · 12 Asuntos Legales · 13 Infraestructura · 14 Logística.</span>
+            </div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Coordinadora de Tanques S.A.S. — quién es la organización que gobierna CIRO</div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">Operación</div>
+            <p>Transporte terrestre especializado en vehículos tipo tanque, cisternas y graneleras — flota propia y de terceros, múltiples productos y clientes.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Sedes</div>
+            <p>Medellín · Bogotá · Cartagena · Yumbo · Tocancipá · Barrancabermeja · Santa Marta.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Clientes / líneas de negocio</div>
+            <p>STEPAN, GLOBAL, PORTLAND, ANDERCOL, JET, Messer, Cryogas, Terpel, Consorcios, WFS, Operaciones SPOT.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Entrada de iniciativas</div>
+        <div class="flow">
+          <span class="flow-step">Solicitud</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Evaluación PMO</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Scoring</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Comité / Gobierno CIRO</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Priorización</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Backlog CIRO</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Ejecución</span>
+        </div>
+        <p style="margin-top:10px; font-size:13px; color:var(--ink-muted)">Toda propuesta es una iniciativa
+          potencial, pero no toda propuesta entra automáticamente al portafolio CIRO.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Ciclo de vida de una iniciativa</div>
+        <div class="flow">
+          <span class="flow-step">Identificación</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Comprensión del problema</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Design Thinking</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Diseño de solución</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Evaluación económica</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Evaluación / priorización</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Aprobación</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Planificación</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Ejecución</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Seguimiento</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Medición</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Cierre</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Lecciones aprendidas</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">El backlog — tres niveles</div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">Inventario general</div>
+            <p>Todas las iniciativas identificadas en CT, sin importar su prioridad — 160 en total,
+              calificadas sin excepción.
+              <span style="display:block; margin-top:6px" class="badge badge--ok">Completo</span></p>
+          </div>
+          <div class="card">
+            <div class="card-title">Backlog de reserva</div>
+            <p>Iniciativas evaluadas que no están en el portafolio visible, pero se conservan. No se
+              eliminan. 6 iniciativas retiradas el 28 ago 2026 (ver «Backlog» → sección de reserva).</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Portafolio visible CIRO</div>
+            <p>Las <b>20 iniciativas</b> mejor priorizadas como foco principal — no una eliminación del
+              resto. <span style="display:block; margin-top:6px" class="badge badge--tie">20/20 cupos — empate en el límite</span></p>
+          </div>
+        </div>
+        <p style="margin-top:12px; font-size:13px; color:var(--ink-muted)"><b style="color:var(--ink)">Trazabilidad
+          de estados:</b> la eliminación física de iniciativas no es un mecanismo válido. Toda iniciativa
+          conserva su historial: Inventario → Backlog de reserva → Priorizada → En trámite → En ejecución →
+          Finalizada → No priorizada → Retirada.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Fuente maestra — esquema de campos mínimos</div>
+        <div class="card">
+          <div style="display:flex; flex-wrap:wrap; gap:8px">
+            <span class="flow-step">ID</span><span class="flow-step">Área</span><span class="flow-step">Líder</span>
+            <span class="flow-step">Sponsor</span><span class="flow-step">Problema</span><span class="flow-step">Oportunidad</span>
+            <span class="flow-step">Descripción</span><span class="flow-step">Proceso relacionado</span><span class="flow-step">Objetivo</span>
+            <span class="flow-step">Alineación estratégica</span><span class="flow-step">Evaluación</span><span class="flow-step">Scoring</span>
+            <span class="flow-step">Prioridad</span><span class="flow-step">Inversión</span><span class="flow-step">Beneficios</span>
+            <span class="flow-step">ROI/VPN/TIR/Payback</span><span class="flow-step">Riesgos</span><span class="flow-step">Dependencias</span>
+            <span class="flow-step">Hitos</span><span class="flow-step">Fechas</span><span class="flow-step">Estado</span>
+            <span class="flow-step">Evidencias</span><span class="flow-step">Resultados</span><span class="flow-step">Indicadores</span>
+            <span class="flow-step">Beneficio real</span><span class="flow-step">Trazabilidad de cambios</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Ritmo de gobierno</div>
+        <div class="grid-3">
+          <div class="card"><div class="card-title">Seguimiento semanal</div><p><b style="color:var(--ink)">PMO + líderes de iniciativa.</b> Avance, actividades, hitos, bloqueos, riesgos, próximas acciones.</p></div>
+          <div class="card"><div class="card-title">Comité mensual</div><p><b style="color:var(--ink)">Gobierno/Comité CIRO.</b> Estado del portafolio, nuevas solicitudes, priorización, bloqueos, recursos, riesgos, evolución del backlog.</p></div>
+          <div class="card"><div class="card-title">Revisión trimestral</div><p><b style="color:var(--ink)">Nivel directivo.</b> Contribución estratégica, resultados, beneficios, capacidad, continuidad/aceleración/cierre de iniciativas.</p></div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- ============ FASE 4 — INFORMACIÓN ============ -->
+    <section class="view" id="view-f4">
+      <div class="view-head">
+        <div class="view-eyebrow">Panel informativo · Fase 4</div>
+        <h2 class="view-title">Modelo de información e indicadores</h2>
+        <p class="view-intro">Qué información necesita CIRO, cómo se captura, consolida, transforma y
+          presenta para el seguimiento, priorización, decisión y medición del portafolio.</p>
+      </div>
+
+      <div data-roles-content="gobierno">
+        <div class="section">
+          <div class="section-label">Indicadores de valor — calculados en vivo</div>
+          <div class="stat-grid" id="indicadores-valor"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Indicadores de gestión — calculados en vivo</div>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Iniciativas registradas por estado</div>
+              <div id="indicadores-estado"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Backlog por clasificación (160 candidatos)</div>
+              <div id="indicadores-backlog"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Proyección de beneficio acumulado del portafolio — próximos 6 meses</div>
+          <div class="card" id="indicadores-proyeccion"></div>
+          <p class="field-hint" style="margin-top:8px">Es una proyección, no un histórico real: asume que las
+            iniciativas registradas mantienen su frecuencia actual, sin nuevas altas ni interrupciones.</p>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Ranking de iniciativas por beneficio económico anual</div>
+          <div id="indicadores-ranking"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Semáforo de riesgo de datos — backlog (160 candidatos)</div>
+          <div class="stat-grid" id="indicadores-semaforo"></div>
+        </div>
+      </div>
+
+      <div data-roles-content="pmo">
+      <div class="section">
+        <div class="section-label">Qué información administra CIRO — 5 bloques</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Bloque</th><th>Información</th></tr></thead>
+            <tbody>
+              <tr><td><b>Portafolio</b></td><td>Iniciativas, áreas, responsables, sponsors, estado, prioridad</td></tr>
+              <tr><td><b>Gestión</b></td><td>Avance, hitos, fechas, bloqueos, dependencias, riesgos</td></tr>
+              <tr><td><b>Valor</b></td><td>Ahorros, ingresos, eficiencia, reducción de tiempos, cumplimiento</td></tr>
+              <tr><td><b>Recursos</b></td><td>Inversión, presupuesto, capacidad requerida, recursos utilizados</td></tr>
+              <tr><td><b>Estratégica</b></td><td>Alineación estratégica, impacto, contribución a objetivos de CT</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Indicadores — sin llenar CIRO de indicadores</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Gestión</div>
+            <ul style="padding-left:18px; display:flex; flex-direction:column; gap:4px">
+              <li style="font-size:13px;color:var(--ink-muted)">% iniciativas en tiempo / atrasadas / completadas</li>
+              <li style="font-size:13px;color:var(--ink-muted)">Tiempo promedio de ejecución</li>
+              <li style="font-size:13px;color:var(--ink-muted)">Iniciativas activas y bloqueadas</li>
+              <li style="font-size:13px;color:var(--ink-muted)">Cumplimiento de hitos</li>
+              <li style="font-size:13px;color:var(--ink-muted)">Capacidad utilizada</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">Valor</div>
+            <ul style="padding-left:18px; display:flex; flex-direction:column; gap:4px">
+              <li style="font-size:13px;color:var(--ink-muted)">Ahorro / ingresos / beneficios generados</li>
+              <li style="font-size:13px;color:var(--ink-muted)">ROI, TIR cuando aplique</li>
+              <li style="font-size:13px;color:var(--ink-muted)">Horas de trabajo liberadas</li>
+              <li style="font-size:13px;color:var(--ink-muted)">Reducción de costos / tiempos</li>
+              <li style="font-size:13px;color:var(--ink-muted)">Beneficio esperado vs. beneficio real</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Para quién produce información — 5 niveles de lectura</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Nivel</th><th>Pregunta que responde</th></tr></thead>
+            <tbody>
+              <tr><td><b>Gerencia / Dirección</b></td><td>¿Qué valor está generando CIRO para CT?</td></tr>
+              <tr><td><b>Gobierno CIRO</b></td><td>¿Qué debemos aprobar, priorizar, acelerar, detener o desbloquear?</td></tr>
+              <tr><td><b>PMO</b></td><td>¿Cómo está funcionando el portafolio?</td></tr>
+              <tr><td><b>Líderes</b></td><td>¿Qué debemos hacer para avanzar nuestra iniciativa?</td></tr>
+              <tr><td><b>Áreas</b></td><td>¿Qué iniciativas afectan nuestra operación y qué participación tenemos?</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note" style="margin-top:10px">PMO y Gobierno CIRO ya tienen vista propia en esta consola.
+          Gerencia, Líderes de iniciativa y Áreas se atienden hoy mediante la presentación ejecutiva y el
+          reporte directo del PMO.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Arquitectura de información</div>
+        <div class="flow">
+          <span class="flow-step">Fuentes de información</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Repositorio / base maestra CIRO</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Modelo de datos CIRO</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Power BI</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Vistas por nivel de gobierno</span>
+        </div>
+        <p style="margin-top:10px; font-size:13px; color:var(--ink-muted)">Principio rector: <b style="color:var(--ink)">una
+          fuente maestra → múltiples vistas, automatizaciones e interfaces.</b> SharePoint como repositorio
+          estructurado, Teams para colaboración, Power BI como capa de análisis, n8n para automatizaciones,
+          Excel solo para cargas puntuales — nunca como fuente maestra.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">La información como sistema de decisión</div>
+        <div class="flow">
+          <span class="flow-step">Dato</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Información</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Indicador</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Análisis</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Decisión</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Acción</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Resultado</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Retroalimentación</span>
+        </div>
+        <p style="margin-top:10px; font-size:13px; color:var(--ink-muted)">Ese ciclo convierte a CIRO en un
+          sistema de gestión, no solamente en un tablero.</p>
+      </div>
+      </div>
+    </section>
+
+    <!-- ============ PMO ============ -->
+    <section class="view" id="view-pmo">
+      <div data-roles-content="pmo">
+      <div class="section">
+        <div class="section-label">PMO y priorización de iniciativas</div>
+        <p class="view-intro" style="margin-top:0">CIRO incorpora una gestión tipo PMO para administrar
+          el portafolio de iniciativas que surgen de sus 4 fases. El PMO no reemplaza las fases: las
+          prioriza y ejecuta mediante un backlog común.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Criterios de priorización y pesos</div>
+        <div class="card" style="display:flex; flex-direction:column; gap:14px">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px">
+              <span><b style="color:var(--pmo-legal)">a. Normativo — legal</b></span><span style="font-variant-numeric:tabular-nums; font-weight:700">50%</span>
+            </div>
+            <div class="score-bar" style="width:100%"><div class="score-bar-fill" style="width:50%; background:var(--pmo-legal)"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px">
+              <span><b style="color:var(--pmo-fin)">b. Financiero — impacto en EBITDA</b></span><span style="font-variant-numeric:tabular-nums; font-weight:700">30%</span>
+            </div>
+            <div class="score-bar" style="width:100%"><div class="score-bar-fill" style="width:30%; background:var(--pmo-fin)"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px">
+              <span><b style="color:var(--pmo-eff)">c. Eficiencia operativa</b></span><span style="font-variant-numeric:tabular-nums; font-weight:700">20%</span>
+            </div>
+            <div class="score-bar" style="width:100%"><div class="score-bar-fill" style="width:20%; background:var(--pmo-eff)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Fórmula y escala de clasificación</div>
+        <div class="quote">Score ponderado = Normativo × 0.50 + Financiero × 0.30 + Eficiencia × 0.20
+          (cada criterio de 1 a 5, resultado sobre 5 / 100%).</div>
+        <div class="table-wrap" style="margin-top:12px">
+          <table class="data-table">
+            <thead><tr><th>Puntaje</th><th>Clasificación</th></tr></thead>
+            <tbody>
+              <tr><td class="num">80–100</td><td><span class="badge badge--critica">Prioridad crítica</span></td></tr>
+              <tr><td class="num">60–79</td><td><span class="badge badge--alta">Prioridad alta</span></td></tr>
+              <tr><td class="num">40–59</td><td><span class="badge badge--backlog">Backlog</span></td></tr>
+              <tr><td class="num">&lt;40</td><td><span class="badge badge--none">No priorizada</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:10px; font-size:12.5px; color:var(--ink-faint)">Escala oficial definida el 28
+          de agosto de 2026 — reemplaza el sistema anterior de rótulos (Alta/Media-Alta/Media/Media-Baja).</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Relación con las fases de desarrollo</div>
+        <dl class="lv-grid">
+          <dt style="color:var(--pmo-legal)">Normativo-legal (50%)</dt><dd>Se nutre directamente de la Fase 1 — el eje regulatorio ya desarrollado.</dd>
+          <dt style="color:var(--pmo-fin)">Financiero / EBITDA (30%)</dt><dd>Se nutre del marco condicional de la Fase 2 (OPEX siempre; CAPEX, ROI, VPN, TIR y Payback según cada iniciativa).</dd>
+          <dt style="color:var(--pmo-eff)">Eficiencia operativa (20%)</dt><dd>Conecta con el enfoque de mejora continua del rol y con oportunidades ya identificadas (Torre de Control, preoperacional, mantenimiento, compras).</dd>
+        </dl>
+      </div>
+      </div>
+
+    </section>
+
+    <!-- ============ BACKLOG ============ -->
+    <section class="view" id="view-backlog">
+      <div data-roles-content="gobierno">
+      <div class="section">
+        <div class="section-label">Panel estructura — vista operativa</div>
+        <p class="view-intro" style="margin-top:0">5 vistas separadas — cada una con su propia información,
+          sin mezclar.</p>
+      </div>
+
+      <div class="section">
+        <div class="role-scroll" id="subnav-estructura" role="tablist" aria-label="Vistas de Panel estructura" style="padding:0">
+          <button class="nav-pill" data-subview="portafolio" role="tab" aria-selected="true">01 · Portafolio visible</button>
+          <button class="nav-pill" data-subview="propuestas" role="tab" aria-selected="false">02 · Propuestas/activas</button>
+          <button class="nav-pill" data-subview="tramite" role="tab" aria-selected="false">03 · En trámite</button>
+          <button class="nav-pill" data-subview="finalizadas" role="tab" aria-selected="false">04 · Finalizadas</button>
+          <button class="nav-pill" data-subview="solicitudes" role="tab" aria-selected="false">05 · Solicitudes</button>
+        </div>
+      </div>
+
+      <div data-subpanel="portafolio">
+        <div class="section">
+          <div class="section-label">Backlog — 160 candidatos calificados</div>
+          <p class="view-intro" style="margin-top:0">Inventario completo de CIRO: 160 iniciativas identificadas
+            y calificadas sin excepción — 148 del relevamiento general de la organización más 12 incorporadas
+            directamente por el Gobierno CIRO. Calificación cualitativa de punto de partida — el Gobierno CIRO
+            debe validarla.</p>
+        </div>
+
+        <div class="section">
+          <div class="stat-grid" id="backlog-stats"></div>
+        </div>
+
+        <div class="section">
+          <div class="panel-card">
+            <div class="panel-head">
+              <span class="panel-num">01</span>
+              <div style="flex:1"><div class="panel-title">Portafolio visible</div><div class="panel-sub">Filtrar y ordenar el backlog priorizado</div></div>
+              <span class="badge badge--ok">Activo</span>
+            </div>
+            <div class="panel-body" style="padding:18px 20px">
+              <div class="backlog-controls">
+                <input class="search-input" id="backlog-search" type="text" placeholder="Buscar iniciativa o área…" aria-label="Buscar en el backlog">
+                <button class="filter-chip" data-filter="Crítica" aria-pressed="true">Crítica</button>
+                <button class="filter-chip" data-filter="Alta" aria-pressed="true">Alta</button>
+                <button class="filter-chip" data-filter="Backlog" aria-pressed="true">Backlog</button>
+                <button class="filter-chip" id="backlog-top20-toggle" aria-pressed="true">Solo Top 20</button>
+                <span class="filter-count" id="backlog-count"></span>
+              </div>
+              <div class="table-wrap">
+                <table class="data-table" id="backlog-table">
+                  <thead>
+                    <tr>
+                      <th class="num sortable" data-key="id">#<span class="arrow">▾</span></th>
+                      <th>Iniciativa</th>
+                      <th>Área líder</th>
+                      <th class="num sortable" data-key="legal">Legal<span class="arrow">▾</span></th>
+                      <th class="num sortable" data-key="fin">Financ.<span class="arrow">▾</span></th>
+                      <th class="num sortable" data-key="efic">Efic.<span class="arrow">▾</span></th>
+                      <th class="sortable is-active" data-key="pct">Score<span class="arrow">▾</span></th>
+                      <th>Clasificación</th>
+                    </tr>
+                  </thead>
+                  <tbody id="backlog-tbody"></tbody>
+                </table>
+              </div>
+              <p style="margin-top:10px; font-size:12px; color:var(--ink-faint)">Filas marcadas con barra dorada:
+                empatadas exactamente en el puntaje de corte del cupo 20 — desempate pendiente del Gobierno CIRO
+                (urgencia, capacidad, dependencias). "Solo Top 20" muestra el portafolio visible; "Ver todas" muestra
+                el inventario general completo, calificado sin excepción. Áreas con «·» son inferidas por el
+                analista, a confirmar.</p>
+              <div class="note" style="margin-top:14px">Calificación cualitativa inicial (Legal/Financiero/Eficiencia,
+                1-5 cada una) — el Gobierno CIRO debe validarla antes de usarla en decisiones de alto impacto.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- ============ PANELES ============ -->
+    <section class="view" id="view-paneles">
+      <div data-roles-content="gobierno">
+
+      <div data-subpanel="propuestas" hidden>
+      <div class="section">
+        <div class="panel-card">
+          <div class="panel-head">
+            <span class="panel-num">02</span>
+            <div style="flex:1"><div class="panel-title">Propuestas / activas</div><div class="panel-sub">Iniciativas del portafolio visible con su estimado de ejecución</div></div>
+            <span class="badge badge--ok">Activo</span>
+          </div>
+          <div class="panel-body">
+            <div class="table-wrap" style="border:none; border-radius:0">
+              <table class="data-table" id="panel1-table">
+                <thead><tr><th class="num">#</th><th>Iniciativa</th><th>Área líder</th><th>Score / Clasificación</th><th>Estimado de ejecución</th></tr></thead>
+                <tbody id="panel1-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <div data-subpanel="tramite" hidden>
+      <div class="section">
+        <div class="panel-card">
+          <div class="panel-head">
+            <span class="panel-num">03</span>
+            <div style="flex:1"><div class="panel-title">En trámite</div><div class="panel-sub">Iniciativas con estado «En ejecución»</div></div>
+            <span class="badge" id="panel2-badge">—</span>
+          </div>
+          <div class="panel-body" id="panel2-body"></div>
+        </div>
+      </div>
+      </div>
+
+      <div data-subpanel="finalizadas" hidden>
+      <div class="section">
+        <div class="panel-card">
+          <div class="panel-head">
+            <span class="panel-num">04</span>
+            <div style="flex:1"><div class="panel-title">Finalizadas</div><div class="panel-sub">Iniciativas con estado «Finalizada» y su aporte económico real</div></div>
+            <span class="badge" id="panel3-badge">—</span>
+          </div>
+          <div class="panel-body" id="panel3-body"></div>
+        </div>
+      </div>
+      </div>
+
+      <div data-subpanel="solicitudes" hidden>
+      <div class="section">
+        <div class="panel-card">
+          <div class="panel-head">
+            <span class="panel-num">05</span>
+            <div style="flex:1"><div class="panel-title">Solicitudes</div><div class="panel-sub">Registro y cuantificación de una nueva iniciativa</div></div>
+            <span class="badge badge--ok">Activo</span>
+          </div>
+          <div class="panel-body" style="padding:18px 20px">
+            <div class="flow">
+              <span class="flow-step">Formulario de solicitud</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Evaluación PMO</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Scoring</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Comité / Gobierno CIRO</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Backlog correspondiente</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Ejecución</span>
+            </div>
+
+            <div class="axis-group-title" style="margin-top:22px">1 · Registro</div>
+            <div class="field-grid">
+              <div class="field is-span2"><label>Nombre de la iniciativa *</label><input type="text" id="econ-nombre" placeholder="Ej. Automatización Consulta SIMIT"></div>
+              <div class="field"><label>Área proponente</label><input type="text" id="econ-area"></div>
+              <div class="field"><label>Líder de iniciativa</label><input type="text" id="econ-lider"></div>
+              <div class="field"><label>Responsable</label><input type="text" id="econ-responsable"></div>
+              <div class="field"><label>Estado</label>
+                <select id="econ-estado">
+                  <option>Propuesta</option><option>En evaluación</option><option>Aprobada</option><option selected>En ejecución</option><option>Finalizada</option>
+                </select>
+              </div>
+              <div class="field"><label>Categoría</label><input type="text" id="econ-categoria" placeholder="Ej. Automatización RPA"></div>
+              <div class="field is-span2"><label>Problema / oportunidad y objetivo</label><textarea id="econ-descripcion"></textarea></div>
+            </div>
+
+            <div class="axis-group-title" style="margin-top:22px">2 · Línea base — cómo funciona hoy</div>
+            <div class="field-grid">
+              <div class="field"><label>Frecuencia (ejecuciones/año) *</label><input type="number" id="econ-frecuencia" min="1" value="12"></div>
+              <div class="field"><label>Tiempo actual por ejecución (h) *</label><input type="number" id="econ-tiempo-actual" min="0" step="0.01"></div>
+              <div class="field"><label>Volumen procesado</label><input type="number" id="econ-volumen" min="0"></div>
+              <div class="field"><label>Personas involucradas</label><input type="number" id="econ-personas" min="0" value="1"></div>
+              <div class="field"><label>Salario mensual *</label><input type="number" id="econ-salario" min="0"></div>
+              <div class="field"><label>Factor prestacional (%) *</label><input type="number" id="econ-factor-prestacional" min="0" step="0.1" placeholder="Ej. 25"></div>
+              <div class="field"><label>Auxilio de transporte</label><input type="number" id="econ-auxilio" min="0" value="0"></div>
+              <div class="field"><label>Horas mensuales *</label><input type="number" id="econ-horas-mensuales" min="1" value="168"></div>
+              <div class="field is-span2"><label>Otros costos operativos actuales / mes</label><input type="number" id="econ-otros-actual" min="0" value="0"></div>
+              <div class="field-hint" style="grid-column:1/-1">Costo-hora cargado = salario mensual × (1 + factor prestacional) ÷ horas mensuales. El auxilio de transporte se registra como referencia, no se divide en el costo-hora.</div>
+            </div>
+
+            <div class="axis-group-title" style="margin-top:22px">3 · Escenario futuro — qué cambia</div>
+            <div class="field-grid">
+              <div class="field"><label>Tiempo futuro por ejecución (h) *</label><input type="number" id="econ-tiempo-futuro" min="0" step="0.01"></div>
+              <div class="field"><label>OPEX incremental / mes (licencia, soporte, infraestructura)</label><input type="number" id="econ-opex-incremental" min="0" value="0"></div>
+              <div class="field"><label>Ejecuciones realizadas a la fecha (opcional)</label><input type="number" id="econ-ejecuciones-realizadas" min="0" placeholder="Ej. 5, si ya está en producción"></div>
+              <div class="field is-span2"><label>Ahorro efectivo confirmado (opcional)</label><input type="number" id="econ-ahorro-efectivo" placeholder="Solo si ya se materializó una reducción real de gasto"></div>
+            </div>
+
+            <div class="axis-group-title" style="margin-top:22px">¿Requiere CAPEX?</div>
+            <div class="toggle-row" role="group" aria-label="Requiere CAPEX">
+              <button type="button" class="toggle-btn" id="econ-capex-no" aria-pressed="true">No</button>
+              <button type="button" class="toggle-btn" id="econ-capex-si" aria-pressed="false">Sí</button>
+            </div>
+            <div class="field-grid" id="econ-capex-fields" hidden style="margin-top:14px">
+              <div class="field"><label>Inversión inicial *</label><input type="number" id="econ-inversion" min="0"></div>
+              <div class="field"><label>Horizonte de evaluación (años) *</label><input type="number" id="econ-horizonte" min="1" value="3"></div>
+              <div class="field"><label>Tasa de descuento anual (%) *</label><input type="number" id="econ-tasa-descuento" min="0" step="0.1" placeholder="Ej. 12"></div>
+              <div class="field-hint" style="grid-column:1/-1">VPN y TIR asumen el beneficio neto anual calculado como flujo constante durante el horizonte.</div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-primary" id="econ-guardar">Guardar iniciativa</button>
+              <button type="button" class="btn-secondary" id="econ-nueva">Nueva iniciativa (limpiar formulario)</button>
+            </div>
+
+            <div class="axis-group-title" style="margin-top:22px">4 · Evaluación económica — resultado</div>
+            <div class="result-grid" id="econ-resultado"></div>
+            <div class="note" style="margin-top:16px">El portafolio consolidado de todas las iniciativas
+              registradas se ve en <b>Panel económico</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+      </div>
+    </section>
+
+    <!-- ============ ESTADO Y PENDIENTES ============ -->
+    <section class="view" id="view-estado">
+      <div data-roles-content="gobierno">
+      <div class="view-head">
+        <div class="view-eyebrow">Estado de CIRO</div>
+        <h2 class="view-title">Estado de implementación y asuntos de gobierno</h2>
+        <p class="view-intro">Vista consolidada del estado actual de CIRO. Permite consultar los componentes
+          definidos, identificar aquellos que se encuentran en actualización y visualizar los asuntos que
+          requieren definición, seguimiento o decisión del Gobierno CIRO.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Resumen del estado</div>
+        <div class="stat-grid">
+          <div class="stat-tile"><div class="stat-num" data-ciro-stat="ok">17</div><div class="stat-label">Completos</div></div>
+          <div class="stat-tile is-warn"><div class="stat-num" data-ciro-stat="warn">4</div><div class="stat-label">En actualización</div></div>
+          <div class="stat-tile is-blocked"><div class="stat-num" data-ciro-stat="blocked">0</div><div class="stat-label">Pendientes / bloqueados</div></div>
+          <div class="stat-tile"><div class="stat-num" data-ciro-stat="total">21</div><div class="stat-label">Componentes evaluados</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Asuntos que requieren seguimiento o decisión</div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+
+          <details class="plain" open>
+            <summary>En actualización</summary>
+            <div class="axis-body">
+              <ul>
+                <li>Consolidación de la fuente maestra de información en un repositorio único de la organización.</li>
+                <li>Documentación de referencia de CIRO.</li>
+                <li>Formalización del control de acceso por nivel de gobierno.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="plain" open>
+            <summary>Requiere decisión</summary>
+            <div class="axis-body">
+              <ul>
+                <li><b>Portafolio priorizado:</b> 8 iniciativas empatadas en el puntaje de corte del portafolio
+                  — definición pendiente de cuáles ocuparán los últimos 4 cupos disponibles.</li>
+                <li><b>Canal de recepción de nuevas iniciativas:</b> definición pendiente.</li>
+                <li><b>Responsable del modelo de información:</b> definición pendiente, si corresponde a una
+                  decisión de gobierno.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="plain">
+            <summary>Información por completar</summary>
+            <div class="axis-body">
+              <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.6; margin-bottom:8px">Estos
+                datos se completan de acuerdo con el avance y la aprobación de cada iniciativa, no representan
+                un error del modelo:</p>
+              <ul>
+                <li>Sponsor, Responsable, Inversión, Riesgo, Dependencias, Fecha objetivo y Resultado obtenido
+                  de las 20 iniciativas del portafolio priorizado.</li>
+                <li>Área líder de algunas iniciativas del inventario general — información pendiente de
+                  validación.</li>
+              </ul>
+            </div>
+          </details>
+
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Arquitectura institucional</div>
+        <dl class="lv-grid">
+          <dt>Gobierno CIRO</dt><dd>Junta Directiva — máximo nivel de decisión del portafolio.</dd>
+          <dt>PMO CIRO</dt><dd>Gestión y coordinación del portafolio de iniciativas.</dd>
+        </dl>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Evolución reciente</div>
+        <div class="card">
+          <div class="chain">
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">28 de agosto de 2026</div><div class="chain-desc">Escala oficial de clasificación del portafolio definida (Crítica / Alta / Backlog / No priorizada).</div></div></div>
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">16 de septiembre de 2026</div><div class="chain-desc">Área líder de la Automatización Consulta SIMIT confirmada como Jurídica.</div></div></div>
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">17 de septiembre de 2026</div><div class="chain-desc">Costo-hora cargado oficial confirmado; inventario general de 160 iniciativas calificado sin excepción.</div></div></div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <img class="footer-logo" src="logo-coorditanques-footer.webp" alt="Coorditanques — Soluciones Logísticas">
+      <span>Cada iniciativa puede utilizar Power BI, n8n y SharePoint según su necesidad de tablero, automatización o documentación.</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- Datos del backlog (160 candidatos calificados: 23 + 137 del inventario Excel) ---------------- */
+  /* Score ponderado = legal*0.5 + fin*0.3 + efic*0.2, sobre 5. Fuente: 03-fase-estructura.md §3.5.1 */
+  var BACKLOG = [
+    { id: 1,  nombre: "Proyecto Torre de Control (incl. integración GPS)", area: "Logística / Torre de Control / Seguridad Física / Facturación", legal: 5, fin: 5, efic: 5 },
+    { id: 2,  nombre: "Lavado de tanques — compatibilidad de productos", area: "Mantenimiento / Logística / Operaciones / SST / Ambiental", legal: 5, fin: 5, efic: 4 },
+    { id: 3,  nombre: "Automatización de tanqueos y control de documentación vehicular", area: "Seguridad Física / Mantenimiento / Logística", legal: 5, fin: 4, efic: 4 },
+    { id: 4,  nombre: "Automatización del control de horas laboradas por conductor", area: "Seguridad Física / GH / Logística", legal: 5, fin: 3, efic: 4 },
+    { id: 5,  nombre: "Preoperación Vehicular", area: "Mantenimiento / Logística / Torre de Control", legal: 5, fin: 3, efic: 4 },
+    { id: 6,  nombre: "Calendario Tributario Municipal y Nacional", area: "Contabilidad", legal: 5, fin: 3, efic: 3 },
+    { id: 7,  nombre: "Decantación Operación Logística (El Dorado)", area: "Logística / Operaciones", areaInferida: true, legal: 3, fin: 5, efic: 4 },
+    { id: 8,  nombre: "Recomendador logístico (programador logístico)", area: "Logística / Mantenimiento / Torre de Control / GH / Jurídica", legal: 3, fin: 4, efic: 5 },
+    { id: 9,  nombre: "Automatización Consulta conductores activos SIMIT", area: "Jurídica", legal: 4, fin: 3, efic: 4, ficha: true },
+    { id: 10, nombre: "Mejora de conciliación vs. RADIAN", area: "Contabilidad", legal: 4, fin: 3, efic: 3 },
+    { id: 11, nombre: "Validaciones de normatividad — JHR Wise vs. normativa municipal", area: "Contabilidad", areaInferida: true, legal: 4, fin: 3, efic: 3 },
+    { id: 12, nombre: "Automatización de ingresos por municipio", area: "Contabilidad", legal: 3, fin: 4, efic: 3 },
+    { id: 13, nombre: "Generación de balances para Revisoría", area: "Contabilidad", legal: 4, fin: 2, efic: 3 },
+    { id: 14, nombre: "Optimización trazabilidad de faltantes", area: "Seguridad Física / Servicio al Cliente / Operaciones", legal: 2, fin: 4, efic: 4 },
+    { id: 15, nombre: "Automatización de causaciones", area: "Contabilidad", legal: 2, fin: 4, efic: 4 },
+    { id: 16, nombre: "Informe de incapacidades (BUK)", area: "Contabilidad / Gestión Humana", legal: 3, fin: 3, efic: 3 },
+    { id: 17, nombre: "Liquidación de comisiones de mano de obra (técnicos y mecánicos)", area: "Mantenimiento", legal: 2, fin: 4, efic: 4 },
+    { id: 18, nombre: "Control de disponibilidad vehicular para mantenimiento", area: "Logística / Mantenimiento", legal: 2, fin: 3, efic: 4 },
+    { id: 19, nombre: "Automatización y sistematización del inventario de mantenimiento", area: "Mantenimiento", legal: 1, fin: 4, efic: 4 },
+    { id: 20, nombre: "Optimización de conciliaciones bancarias (fecha y valor)", area: "Contabilidad", legal: 1, fin: 4, efic: 4 },
+    { id: 21, nombre: "Órdenes de Compra y Unidades Estratégicas de Negocio (UEN)", area: "Todas las áreas administrativas de CT", legal: 1, fin: 4, efic: 4 },
+    { id: 22, nombre: "Automatización de anticipos logísticos", area: "Tesorería", legal: 1, fin: 4, efic: 4 },
+    { id: 23, nombre: "Integración WorkManager con BUK", area: "TIC / Gestión Humana", areaInferida: true, legal: 1, fin: 3, efic: 5 },
+    /* -------- Inventario general del Excel (148 iniciativas) — 137 nuevas tras excluir 11 duplicados
+       exactos/casi-exactos ya presentes arriba o en el backlog de reserva (03-fase-estructura.md §3.5).
+       Calificadas con heurística a partir de Urgencia/Prioridad/Impacto/Tipo del Excel — estimación
+       cualitativa inicial, el PMO debe validarla, igual que las 23 anteriores. */
+{ id: 24, nombre: "Actualización y estandarización de procedimientos SST (INTRANET)", area: "SST", legal: 5, fin: 3, efic: 5, inventario148: true },
+    { id: 25, nombre: "Ajuste del proceso real vs. proceso documentado de inspección de vehículos", area: "SST", legal: 3, fin: 1, efic: 3, inventario148: true },
+    { id: 26, nombre: "Rediseño de capacitaciones e inducciones en SST", area: "SST", legal: 3, fin: 1, efic: 3, inventario148: true },
+    { id: 27, nombre: "Formaciones digitales internas para mejorar procesos SST", area: "SST", legal: 3, fin: 1, efic: 3, inventario148: true },
+    { id: 28, nombre: "Evaluación de jornada laboral de conductores y su impacto en seguridad", area: "SST", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 29, nombre: "Revisión de oportunidades de automatización en procesos SST", area: "SST", legal: 3, fin: 1, efic: 4, inventario148: true },
+    { id: 30, nombre: "Actualización documental en compras, financiera, mantenimiento, logística, SST y TIC", area: "Gestión de Calidad", legal: 5, fin: 3, efic: 5, inventario148: true },
+    { id: 31, nombre: "Sistema de control para asegurar la gestión del cambio", area: "Gestión de Calidad", legal: 3, fin: 3, efic: 3, inventario148: true },
+    { id: 32, nombre: "Sistema de validación de cambios antes de implementar", area: "Gestión de Calidad", legal: 1, fin: 1, efic: 1, inventario148: true },
+    { id: 33, nombre: "Plan de mejora del servicio al cliente interno/externo", area: "Gestión de Calidad", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 34, nombre: "Automatización y seguimiento al cierre de hallazgos", area: "Gestión de Calidad", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 35, nombre: "Plan de normalización de procesos de atención de quejas laborales", area: "Gestión de Calidad", legal: 1, fin: 1, efic: 3, inventario148: true },
+    { id: 36, nombre: "Gestión de calidad en áreas operativas y administrativas", area: "Gestión de Calidad", legal: 5, fin: 2, efic: 4, inventario148: true },
+    { id: 37, nombre: "Sistema para evitar pérdida de información en implementación de procesos", area: "Gestión de Calidad", legal: 1, fin: 1, efic: 3, inventario148: true },
+    { id: 38, nombre: "Plan de reducción de reclamos operativos", area: "Gestión de Calidad", legal: 3, fin: 3, efic: 3, inventario148: true },
+    { id: 39, nombre: "Digitalización Documental Masiva y Optimización de Consultas", area: "CAD", legal: 3, fin: 5, efic: 5, inventario148: true },
+    { id: 40, nombre: "Optimización del proceso de radicación electrónica", area: "CAD", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 41, nombre: "Integración correcta de documentos RADIAN", area: "CAD / Contabilidad", legal: 4, fin: 3, efic: 1, inventario148: true },
+    { id: 42, nombre: "Implementación del flujo “Solicitud CAD”", area: "CAD", legal: 1, fin: 1, efic: 4, inventario148: true },
+    { id: 43, nombre: "Ajuste del flujo de Cuentas por Pagar", area: "CAD", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 44, nombre: "Establecimiento del flujo único documental corporativo", area: "CAD", legal: 1, fin: 1, efic: 3, inventario148: true },
+    { id: 45, nombre: "Revisión y Actualización de la Gestión Documental", area: "CAD", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 46, nombre: "Actualización de la Gestión Documental", area: "MANTENIMIENTO", legal: 1, fin: 1, efic: 3, inventario148: true },
+    { id: 47, nombre: "Implementación del Proceso de Solicitud Formal de Compras", area: "MANTENIMIENTO + Todas las áreas", legal: 3, fin: 5, efic: 5, inventario148: true },
+    { id: 48, nombre: "Migración y Sistematización Integral de OT", area: "MANTENIMIENTO", legal: 2, fin: 4, efic: 4, inventario148: true },
+    { id: 49, nombre: "Implementación de Bodegas de Consignación para Inventario Técnico", area: "MANTENIMIENTO", legal: 1, fin: 1, efic: 3, inventario148: true },
+    { id: 50, nombre: "Implementación del Aplicativo de Proveedores con Cotización Electrónica", area: "MANTENIMIENTO", legal: 1, fin: 3, efic: 4, inventario148: true },
+    { id: 51, nombre: "Optimización del Proceso de OT", area: "MANTENIMIENTO", legal: 2, fin: 4, efic: 4, inventario148: true },
+    { id: 52, nombre: "Implementación del Sistema de Control de Mano de Obra", area: "MANTENIMIENTO", legal: 1, fin: 3, efic: 3, inventario148: true },
+    { id: 53, nombre: "Levantamiento, estandarización y digitalización del proceso disciplinario", area: "JURIDICA", legal: 5, fin: 3, efic: 5, inventario148: true },
+    { id: 54, nombre: "Optimización del proceso de expedición y pago de SOAT", area: "JURIDICA", legal: 5, fin: 5, efic: 5, inventario148: true },
+    { id: 55, nombre: "Levantamiento de procesos y responsabilidades por cargo (menor a mayor)", area: "JURIDICA", legal: 4, fin: 1, efic: 1, inventario148: true },
+    { id: 56, nombre: "Revisión, actualización y carga en intranet de la gestión documental jurídica", area: "JURIDICA", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 57, nombre: "Diseño del proceso de atención al cliente interno (primera línea con Gestión Humana)", area: "JURIDICA", legal: 5, fin: 3, efic: 5, inventario148: true },
+    { id: 58, nombre: "Fortalecimiento de la cultura de responsabilidad y prevención en áreas operativas", area: "JURIDICA", legal: 4, fin: 1, efic: 1, inventario148: true },
+    { id: 59, nombre: "Estandarización y documentación oficial de procedimientos", area: "Contabilidad – Sistema de Gestión – Compras – SAGRILAFT", legal: 4, fin: 5, efic: 3, inventario148: true },
+    { id: 60, nombre: "Creación de tableros de medición de desempeño", area: "Contabilidad – Talento Humano – TI", legal: 2, fin: 3, efic: 3, inventario148: true },
+    { id: 61, nombre: "Fortalecimiento cultural para fiabilidad de información contable", area: "Contabilidad – Compras – SAGRILAFT – Operativas", legal: 2, fin: 3, efic: 3, inventario148: true },
+    { id: 62, nombre: "Automatización conciliación CxC", area: "Contabilidad – TI", legal: 4, fin: 5, efic: 5, inventario148: true },
+    { id: 63, nombre: "Automatización conciliación CxP", area: "Contabilidad – TI", legal: 4, fin: 5, efic: 5, inventario148: true },
+    { id: 64, nombre: "Automatización anticipos de viaje", area: "Contabilidad – TI", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 65, nombre: "Automatización anticipos mantenimiento", area: "Contabilidad – TI", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 66, nombre: "Automatización anticipos proveedores y transportadores", area: "Contabilidad – TI", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 67, nombre: "Conciliación CxP a transportadores", area: "Contabilidad – TI", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 68, nombre: "Conciliación diferido llantas", area: "Contabilidad – TI", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 69, nombre: "Conciliación diferidos generales", area: "Contabilidad – TI", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 70, nombre: "Automatización provisión ICA", area: "Contabilidad – TI", legal: 4, fin: 5, efic: 5, inventario148: true },
+    { id: 71, nombre: "Automatización autorretención", area: "Contabilidad – TI", legal: 4, fin: 5, efic: 5, inventario148: true },
+    { id: 72, nombre: "Automatización chequeo de bases tributarias", area: "Contabilidad – TI", legal: 4, fin: 5, efic: 5, inventario148: true },
+    { id: 73, nombre: "Automatización documentos tributarios adicionales", area: "Contabilidad – TI", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 74, nombre: "Optimización proceso de causación en OFIMA", area: "Contabilidad – TI – Compras", legal: 4, fin: 5, efic: 5, inventario148: true },
+    { id: 75, nombre: "Actualización de Gestión Documental Logística", area: "Logística", legal: 2, fin: 2, efic: 4, inventario148: true },
+    { id: 76, nombre: "Control y Carga Documental de Conductores y Mantenimiento", area: "Logística", legal: 2, fin: 2, efic: 4, inventario148: true },
+    { id: 77, nombre: "Flujo y Mejora del Registro Nacional de Carga (RNDC)", area: "Logística – Servicio al Cliente", legal: 2, fin: 2, efic: 4, inventario148: true },
+    { id: 78, nombre: "Gestión de Novedades y Cumplimiento de Entrega", area: "Logística – Conductores – Clientes", legal: 5, fin: 2, efic: 2, inventario148: true },
+    { id: 79, nombre: "Optimización del Procedimiento de Anticipos", area: "Logística – Contabilidad", legal: 2, fin: 3, efic: 3, inventario148: true },
+    { id: 80, nombre: "Migración del Registro de Demanda al Área de Servicio al Cliente", area: "Logística – Servicio al Cliente", legal: 2, fin: 2, efic: 4, inventario148: true },
+    { id: 81, nombre: "Automatización de Programación de Viajes", area: "Logística", legal: 2, fin: 2, efic: 5, inventario148: true },
+    { id: 82, nombre: "Automatización de Planeación Operativa", area: "Logística – Mantenimiento", legal: 2, fin: 2, efic: 4, inventario148: true },
+    { id: 83, nombre: "Optimización del Proceso Disciplinario para Conductores", area: "Logística – Gestión Humana", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 84, nombre: "Gestión de Cambios Repentinos (Demanda Variada)", area: "Logística", legal: 5, fin: 2, efic: 2, inventario148: true },
+    { id: 85, nombre: "Creación de Matriz de Selección de Vehículos", area: "Logística", legal: 2, fin: 2, efic: 2, inventario148: true },
+    { id: 86, nombre: "Integración completa GPS Multiplataforma", area: "Seguridad Física – Logística – Sistemas", legal: 5, fin: 3, efic: 5, inventario148: true },
+    { id: 87, nombre: "Sistema automatizado para Ranking de Conductores", area: "Seguridad Física – Operaciones – SST – Logística", legal: 4, fin: 2, efic: 4, inventario148: true },
+    { id: 88, nombre: "Actualización documentación BASC y Zona Restringida", area: "Seguridad Física – Gestión Documental", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 89, nombre: "Implementación de capacitaciones efectivas (no virtuales)", area: "Seguridad Física – SST", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 90, nombre: "Formalización procesos disciplinarios en Seguridad Física", area: "Seguridad Física – Gestión Humana", legal: 5, fin: 2, efic: 4, inventario148: true },
+    { id: 91, nombre: "Mejora en entrega de indicadores y analítica de seguridad", area: "Seguridad Física – Gerencia – Operaciones", legal: 4, fin: 2, efic: 4, inventario148: true },
+    { id: 92, nombre: "Automatización del proceso de Huella de Carbono", area: "Gestión Ambiental / Logística", legal: 5, fin: 4, efic: 4, inventario148: true },
+    { id: 93, nombre: "Estandarización del procedimiento de lavado de vehículos", area: "Gestión Ambiental / Operaciones", legal: 4, fin: 2, efic: 4, inventario148: true },
+    { id: 94, nombre: "Integración Ambiental + SST para riesgo químico", area: "SST / Gestión Ambiental / Mantenimiento", legal: 5, fin: 2, efic: 2, inventario148: true },
+    { id: 95, nombre: "Estandarización del control operativo y manuales", area: "Gestión Ambiental / Operaciones", legal: 3, fin: 1, efic: 1, inventario148: true },
+    { id: 96, nombre: "Control de operación de caldera", area: "Operaciones / Gestión Ambiental / SST", legal: 5, fin: 2, efic: 2, inventario148: true },
+    { id: 97, nombre: "Control y registro de lavados de tanques", area: "Operaciones / SST / Ambiental", legal: 4, fin: 2, efic: 4, inventario148: true },
+    { id: 98, nombre: "Implementación del programa de separación de residuos", area: "Ambiental / Operaciones", legal: 5, fin: 2, efic: 2, inventario148: true },
+    { id: 99, nombre: "Programa de jornadas de orden y aseo", area: "Operaciones / Mantenimiento", legal: 1, fin: 1, efic: 3, inventario148: true },
+    { id: 100, nombre: "Gestión del manejo de lodos", area: "Ambiental / Operaciones", legal: 4, fin: 1, efic: 1, inventario148: true },
+    { id: 101, nombre: "Control operacional en estación de servicio (EDS)", area: "Ambiental / EDS", legal: 4, fin: 2, efic: 2, inventario148: true },
+    { id: 102, nombre: "Control de aguas subterráneas y aljibe", area: "Gestión Ambiental", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 103, nombre: "Gestión administrativa de requerimientos y mantenimientos", area: "Ambiental / Técnica / Jurídica", legal: 4, fin: 1, efic: 1, inventario148: true },
+    { id: 104, nombre: "Control de lecturas para indicadores ambientales", area: "Gestión Ambiental", legal: 4, fin: 2, efic: 4, inventario148: true },
+    { id: 105, nombre: "Fortalecimiento de inducción y capacitación ambiental", area: "Gestión Ambiental / SST", legal: 4, fin: 2, efic: 2, inventario148: true },
+    { id: 106, nombre: "Atención a quejas internas y externas ambientales", area: "Ambiental / Operaciones", legal: 4, fin: 1, efic: 1, inventario148: true },
+    { id: 107, nombre: "Cultura integral Operaciones–SST–Calidad Ambiental", area: "SST / Operaciones / Calidad", legal: 4, fin: 2, efic: 4, inventario148: true },
+    { id: 108, nombre: "Gestión del almacenamiento de reciclaje", area: "Ambiental", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 109, nombre: "Levantamiento, revisión y actualización del Sistema de Gestión Documental del área de Tesorería", area: "Tesorería", legal: 5, fin: 5, efic: 5, inventario148: true },
+    { id: 110, nombre: "Integración de archivos maestros en OFIMA", area: "Tesorería", legal: 4, fin: 5, efic: 5, inventario148: true },
+    { id: 111, nombre: "Depuración cuentas por pagar en WorkManager – Paso 7", area: "Tesorería", legal: 3, fin: 5, efic: 2, inventario148: true },
+    { id: 112, nombre: "Carga de comprobantes en WorkManager – Paso 8", area: "Tesorería", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 113, nombre: "Traslado de información de viajes (Ecuatoriana de Servicios)", area: "Tesorería", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 114, nombre: "Automatización de extractos bancarios para matriz financiera", area: "Tesorería", legal: 4, fin: 5, efic: 5, inventario148: true },
+    { id: 115, nombre: "Revisión y conciliación OFIMA vs pagos banco", area: "Tesorería", legal: 4, fin: 5, efic: 3, inventario148: true },
+    { id: 116, nombre: "Gestión de bandeja WorkManager – Facturas electrónicas", area: "Tesorería", legal: 3, fin: 4, efic: 4, inventario148: true },
+    { id: 117, nombre: "Mejora del proceso de anticipos y legalizaciones", area: "Tesorería", legal: 4, fin: 5, efic: 5, inventario148: true },
+    { id: 118, nombre: "Replanteamiento de políticas de tesorería", area: "Tesorería", legal: 5, fin: 5, efic: 5, inventario148: true },
+    { id: 119, nombre: "Mejora en Sitrac – Pagos transportadores nacionales", area: "Tesorería", legal: 2, fin: 3, efic: 4, inventario148: true },
+    { id: 120, nombre: "Implementación de Mesa de Ayuda (Help Desk) TIC", area: "TI", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 121, nombre: "Digitalización del acta de entrega de equipos con firma electrónica", area: "TI", legal: 5, fin: 2, efic: 5, inventario148: true },
+    { id: 122, nombre: "Registro y control de incidentes de servidores / ciberseguridad", area: "TI", legal: 5, fin: 3, efic: 5, inventario148: true },
+    { id: 123, nombre: "Política integral de contraseñas, permisos y usuarios", area: "TI", legal: 5, fin: 3, efic: 5, inventario148: true },
+    { id: 124, nombre: "Definición y limitación de actividades de TI fuera del alcance", area: "TI", legal: 1, fin: 3, efic: 3, inventario148: true },
+    { id: 125, nombre: "Revisión del proceso de requisición para perfiles TIC", area: "TI / Innovación", legal: 3, fin: 3, efic: 3, inventario148: true },
+    { id: 126, nombre: "Optimización del proceso de desarrollo (bajo rendimiento actual)", area: "TI", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 127, nombre: "Levantamiento y actualización de documentación técnica de TI", area: "TI", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 128, nombre: "Mejoras en infraestructura tecnológica", area: "TI", legal: 3, fin: 3, efic: 3, inventario148: true },
+    { id: 129, nombre: "Estandarización del proceso de backups de usuarios", area: "TI", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 130, nombre: "Control de cambios para desarrollos (mapeo previo obligatorio)", area: "TI", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 131, nombre: "Reducción de rotación del área de TI", area: "TI", legal: 2, fin: 2, efic: 2, inventario148: true },
+    { id: 132, nombre: "Protección y preservación del conocimiento técnico", area: "TI", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 133, nombre: "Levantamiento de procedimientos críticos de TI", area: "TI", legal: 3, fin: 3, efic: 3, inventario148: true },
+    { id: 134, nombre: "Acuerdo de Nivel de Servicio (SLA) para TI", area: "TI", legal: 5, fin: 3, efic: 5, inventario148: true },
+    { id: 135, nombre: "Apoyo gerencial para restricciones y controles TI", area: "TI", legal: 5, fin: 2, efic: 4, inventario148: true },
+    { id: 136, nombre: "Correcciones operativas diarias en SITRAC", area: "TI", legal: 2, fin: 2, efic: 4, inventario148: true },
+    { id: 137, nombre: "Correcciones operativas diarias en OFIMA", area: "TI", legal: 2, fin: 4, efic: 2, inventario148: true },
+    { id: 138, nombre: "Levantamiento y actualización de procedimientos de Gestión Humana", area: "Gestión Humana", legal: 5, fin: 3, efic: 3, inventario148: true },
+    { id: 139, nombre: "Optimización del registro del empleado en bases de datos", area: "Gestión Humana", legal: 2, fin: 2, efic: 4, inventario148: true },
+    { id: 140, nombre: "Integración completa de permisos laborales", area: "Gestión Humana", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 141, nombre: "Creación y estandarización del formato digital de entrega de dotación", area: "Gestión Humana", legal: 4, fin: 1, efic: 4, inventario148: true },
+    { id: 142, nombre: "Reducción de reprocesos en creación de perfiles", area: "Gestión Humana", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 143, nombre: "Sistema de escaneo eficiente para hojas de vida", area: "Gestión Humana", legal: 1, fin: 1, efic: 4, inventario148: true },
+    { id: 144, nombre: "Mejora en la atención al cliente interno", area: "Gestión Humana", legal: 2, fin: 2, efic: 4, inventario148: true },
+    { id: 145, nombre: "Estandarización del flujo de información entre sedes", area: "Gestión Humana", legal: 2, fin: 2, efic: 2, inventario148: true },
+    { id: 146, nombre: "Notificación oportuna de procesos nuevos", area: "Gestión Humana", legal: 4, fin: 1, efic: 1, inventario148: true },
+    { id: 147, nombre: "Actualización e integración del Plan de Formación", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 148, nombre: "Sistema de indicadores automatizados de formación", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 149, nombre: "Integración del cronograma de capacitaciones empresariales", area: "Formación", legal: 2, fin: 2, efic: 4, inventario148: true },
+    { id: 150, nombre: "Implementación de herramienta para registro y control de formación (MODO u otra)", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 151, nombre: "Protocolo para uso de Teams en capacitaciones", area: "Formación", legal: 4, fin: 1, efic: 3, inventario148: true },
+    { id: 152, nombre: "Política de disponibilidad mínima para capacitaciones", area: "Formación", legal: 5, fin: 3, efic: 3, inventario148: true },
+    { id: 153, nombre: "Digitalización de asistencias y exámenes de eficacia", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 154, nombre: "Creación de aplicativos para capacitaciones", area: "Formación", legal: 2, fin: 2, efic: 2, inventario148: true },
+    { id: 155, nombre: "Cumplimiento desde las directrices (cultura organizacional)", area: "Formación", legal: 5, fin: 2, efic: 2, inventario148: true },
+    { id: 156, nombre: "Documentación oficial de procesos de Formación", area: "Formación", legal: 5, fin: 2, efic: 2, inventario148: true },
+    { id: 157, nombre: "Desarrollo y preparación del material para nuevas capacitaciones", area: "Formación", legal: 1, fin: 1, efic: 3, inventario148: true },
+    { id: 158, nombre: "Optimización de citaciones a capacitaciones", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 159, nombre: "Alineación con líderes para mejorar comunicación y flujo de información", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
+    { id: 160, nombre: "Integración del área de Formación en todas las áreas de la empresa", area: "Formación", legal: 2, fin: 2, efic: 2, inventario148: true }
+  ];
+
+  BACKLOG.forEach(function (r) {
+    var score = r.legal * 0.5 + r.fin * 0.3 + r.efic * 0.2;
+    r.score = Math.round(score * 10) / 10;
+    r.pct = Math.round(score / 5 * 100);
+    r.clase = r.pct >= 80 ? "Crítica" : r.pct >= 60 ? "Alta" : r.pct >= 40 ? "Backlog" : "No priorizada";
+    r.rankVar = r.clase === "Crítica" ? "--rank-critica" : r.clase === "Alta" ? "--rank-alta" : r.clase === "Backlog" ? "--rank-backlog" : "--rank-none";
+    r.badgeClass = r.clase === "Crítica" ? "badge--critica" : r.clase === "Alta" ? "badge--alta" : r.clase === "Backlog" ? "badge--backlog" : "badge--none";
+  });
+
+  /* ---------------- Top 20 y empates — calculado en vivo, ya no a mano (160 candidatos) ---------------- */
+  (function () {
+    var ranked = BACKLOG.slice().sort(function (a, b) { return b.pct - a.pct; });
+    var boundaryPct = ranked.length > 20 ? ranked[19].pct : null;
+    ranked.forEach(function (r, i) { r.top20 = i < 20; });
+    BACKLOG.forEach(function (r) {
+      r.fueraDePortafolio = !r.top20;
+      r.empatada = boundaryPct != null && r.pct === boundaryPct;
+    });
+  })();
+
+  /* ---------------- Motor de evaluación económica CIRO ----------------
+     Un único modelo de cálculo: OPEX obligatorio siempre; CAPEX, ROI, VPN, TIR y Payback
+     condicionales. Usado tanto por la calculadora de Fase 2 como por el Panel 3 (Finalizadas) —
+     una sola fuente de cálculo, sin duplicar fórmulas. */
+  function fmtCOP(n) {
+    if (n == null || isNaN(n)) return "—";
+    return "$" + Math.round(n).toLocaleString("es-CO");
+  }
+  function fmtPct(n) {
+    if (n == null || isNaN(n)) return "—";
+    return (Math.round(n * 10) / 10).toLocaleString("es-CO") + "%";
+  }
+  function fmtHoras(n) {
+    if (n == null || isNaN(n)) return "—";
+    return (Math.round(n * 100) / 100).toLocaleString("es-CO") + " h";
+  }
+
+  var EconEngine = (function () {
+    function costoHoraCargado(salario, factorPrestacionalPct, horasMensuales) {
+      if (!salario || !horasMensuales) return null;
+      var factor = (factorPrestacionalPct || 0) / 100;
+      return (salario * (1 + factor)) / horasMensuales;
+    }
+    function npv(tasa, flujos) {
+      var total = 0;
+      for (var i = 0; i < flujos.length; i++) total += flujos[i] / Math.pow(1 + tasa, i);
+      return total;
+    }
+    function irr(flujos) {
+      function f(r) { return npv(r, flujos); }
+      var lo = -0.99, hi = 10, flo = f(lo), fhi = f(hi);
+      if (isNaN(flo) || isNaN(fhi) || flo * fhi > 0) return null;
+      for (var i = 0; i < 100; i++) {
+        var mid = (lo + hi) / 2, fm = f(mid);
+        if (Math.abs(fm) < 1) return mid;
+        if (flo * fm < 0) { hi = mid; fhi = fm; } else { lo = mid; flo = fm; }
+      }
+      return (lo + hi) / 2;
+    }
+    function evaluar(d) {
+      var costoHora = costoHoraCargado(d.salario, d.factorPrestacional, d.horasMensuales);
+      var r = { costoHora: costoHora };
+      if (costoHora == null || d.tiempoActual == null || d.tiempoActual === "" || d.tiempoFuturo == null || d.tiempoFuturo === "" || !d.frecuencia) {
+        r.datosInsuficientes = true;
+        return r;
+      }
+      var tiempoActual = Number(d.tiempoActual), tiempoFuturo = Number(d.tiempoFuturo), frecuencia = Number(d.frecuencia);
+      r.horasLiberadasPorEjecucion = tiempoActual - tiempoFuturo;
+      r.horasLiberadasAnuales = r.horasLiberadasPorEjecucion * frecuencia;
+      r.reduccionPct = tiempoActual > 0 ? (r.horasLiberadasPorEjecucion / tiempoActual) * 100 : null;
+      r.factorVelocidad = tiempoFuturo > 0 ? (tiempoActual / tiempoFuturo) : null;
+      r.beneficioPorEjecucion = r.horasLiberadasPorEjecucion * costoHora;
+      r.ejecucionesRealizadas = (d.ejecucionesRealizadas !== null && d.ejecucionesRealizadas !== undefined && d.ejecucionesRealizadas !== "") ? Number(d.ejecucionesRealizadas) : null;
+      r.beneficioAcumuladoAFecha = r.ejecucionesRealizadas != null ? r.ejecucionesRealizadas * r.beneficioPorEjecucion : null;
+
+      r.opexActualAnual = tiempoActual * frecuencia * costoHora + (Number(d.otrosCostosActualMensual) || 0) * 12;
+      r.opexFuturoAnual = tiempoFuturo * frecuencia * costoHora + (Number(d.opexIncrementalMensual) || 0) * 12;
+      r.beneficioOpexAnual = r.opexActualAnual - r.opexFuturoAnual;
+      r.beneficioMensual = r.beneficioOpexAnual / 12;
+      r.valorCapacidadLiberadaAnual = r.horasLiberadasAnuales * costoHora;
+      r.ahorroEfectivo = (d.ahorroEfectivo !== null && d.ahorroEfectivo !== undefined && d.ahorroEfectivo !== "") ? Number(d.ahorroEfectivo) : null;
+
+      r.requiereCapex = !!d.requiereCapex;
+      if (!r.requiereCapex) {
+        r.capex = null; r.roi = "No requerido"; r.payback = "No requerido"; r.vpn = "No requerido"; r.tir = "No requerido";
+      } else {
+        var inversion = Number(d.inversionInicial) || 0;
+        r.capex = inversion || null;
+        var beneficioNetoAnual = r.beneficioOpexAnual;
+        if (!inversion) {
+          r.roi = "Datos insuficientes"; r.payback = "Datos insuficientes"; r.vpn = "Datos insuficientes"; r.tir = "Datos insuficientes";
+        } else {
+          r.roi = ((beneficioNetoAnual - inversion) / inversion) * 100;
+          r.payback = beneficioNetoAnual > 0 ? (inversion / beneficioNetoAnual) : null;
+          if (d.horizonte && d.tasaDescuento !== null && d.tasaDescuento !== undefined && d.tasaDescuento !== "") {
+            var tasa = Number(d.tasaDescuento) / 100, horizonte = Number(d.horizonte);
+            var flujos = [-inversion];
+            for (var y = 1; y <= horizonte; y++) flujos.push(beneficioNetoAnual);
+            r.vpn = npv(tasa, flujos);
+            r.tir = irr(flujos);
+            if (r.tir == null) r.tir = "Datos insuficientes"; else r.tir = r.tir * 100;
+          } else {
+            r.vpn = "Datos insuficientes"; r.tir = "Datos insuficientes";
+          }
+        }
+      }
+      return r;
+    }
+    return { costoHoraCargado: costoHoraCargado, evaluar: evaluar, npv: npv, irr: irr };
+  })();
+
+  var ECON_KEY = "ciro-econ-iniciativas";
+  function loadIniciativasEcon() {
+    try { return JSON.parse(localStorage.getItem(ECON_KEY)) || []; } catch (e) { return []; }
+  }
+  function saveIniciativasEcon(list) {
+    try { localStorage.setItem(ECON_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+  function seedSimitSiVacio() {
+    var list = loadIniciativasEcon();
+    if (list.length) return list;
+    list = [{
+      id: "simit-consulta",
+      nombre: "Automatización Consulta conductores activos SIMIT",
+      area: "Jurídica", lider: "", responsable: "Auxiliar Administrativo",
+      estado: "En ejecución", categoria: "Automatización RPA (UiPath)",
+      descripcion: "Verificación mensual del estado de cuenta SIMIT de conductores activos antes de asignarlos a un viaje.",
+      frecuencia: 12, tiempoActual: 11, tiempoFuturo: 40 / 60, volumen: 210, personas: 1,
+      salario: 1750905, factorPrestacional: 25, auxilio: 249095, horasMensuales: 168,
+      otrosCostosActualMensual: 0, opexIncrementalMensual: 0, ejecucionesRealizadas: 5, ahorroEfectivo: null,
+      requiereCapex: false, inversionInicial: null, horizonte: null, tasaDescuento: null
+    }];
+    saveIniciativasEcon(list);
+    return list;
+  }
+  seedSimitSiVacio();
+
+  var CHECKLIST = [
+    { n: 1, t: "Marco general definido", s: "ok", note: "Identidad, alcance y metodología de CIRO" },
+    { n: 2, t: "Tres ejes definidos", s: "ok", note: "Información, Procesos y Dinámica" },
+    { n: 3, t: "Cuatro fases documentadas", s: "ok", note: "Normativa, Económica, Estructura e Información" },
+    { n: 4, t: "Gobierno CIRO definido", s: "ok", note: "Cadena de gobierno y niveles de decisión" },
+    { n: 5, t: "PMO definido", s: "ok", note: "Rol, alcance y ritmo de gobierno" },
+    { n: 6, t: "Metodología de priorización documentada", s: "ok", note: "Criterios, pesos y escala de clasificación" },
+    { n: 7, t: "Inventario general de iniciativas", s: "ok", note: "160 iniciativas calificadas sin excepción" },
+    { n: 8, t: "Backlog de reserva", s: "ok", note: "6 iniciativas conservadas, no eliminadas" },
+    { n: 9, t: "Top 20 de iniciativas visibles", s: "warn", note: "160 candidatos calificados para 20 cupos — empate en el puntaje de corte entre varias iniciativas" },
+    { n: 10, t: "Modelo económico", s: "ok", note: "Enfoque proporcional sin umbral fijo" },
+    { n: 11, t: "Flujo de solicitudes", s: "ok", note: "Registro y cuantificación de nuevas iniciativas" },
+    { n: 12, t: "Fuente maestra", s: "warn", note: "Esquema de campos definido; consolidación en repositorio único en actualización" },
+    { n: 13, t: "Herramienta viva", s: "ok", note: "Vistas por rol, backlog interactivo y portafolio económico con casos reales" },
+    { n: 14, t: "Paneles de seguimiento del PMO", s: "ok", note: "5 sub-paneles en Panel estructura: Portafolio visible, Propuestas/activas, En trámite, Finalizadas y Solicitudes — todos calculados desde el mismo registro, sin cifras duplicadas" },
+    { n: 15, t: "Vistas diferenciadas por nivel de gobierno", s: "warn", note: "PMO y Gobierno CIRO tienen vista propia; el control de acceso formal está en actualización" },
+    { n: 16, t: "Modelo de información", s: "ok", note: "Bloques de información y arquitectura de datos" },
+    { n: 17, t: "Indicadores", s: "ok", note: "Indicadores de gestión y de valor definidos" },
+    { n: 18, t: "Herramientas disponibles para iniciativas", s: "ok", note: "Power BI, n8n y SharePoint son herramientas que cada iniciativa puede usar para su tablero/workflow/documentación — no es una integración pendiente de esta consola" },
+    { n: 19, t: "Trazabilidad de iniciativas", s: "ok", note: "Historial de estados conservado, sin eliminación" },
+    { n: 20, t: "Documentación de referencia del país", s: "warn", note: "En actualización" },
+    { n: 21, t: "Presentación ejecutiva para Gerencia", s: "ok", note: "Disponible como pieza de comunicación independiente" }
+  ];
+
+  /* ---------------- Navegación por vistas ----------------
+     "estructura" es un panel consolidado: agrupa gobierno, PMO, backlog y paneles de seguimiento
+     en una sola pestaña (antes eran 5 pestañas separadas con información relacionada — se unificaron
+     para eliminar la sensación de vistas duplicadas). */
+  var pills = Array.prototype.slice.call(document.querySelectorAll(".nav-pill"));
+  var views = Array.prototype.slice.call(document.querySelectorAll(".view"));
+  var VIEW_GROUPS = { estructura: ["f3", "pmo", "backlog", "paneles", "estado"] };
+
+  function activateView(name) {
+    var ids = VIEW_GROUPS[name] || [name];
+    views.forEach(function (v) {
+      var vid = v.id.replace(/^view-/, "");
+      v.classList.toggle("is-active", ids.indexOf(vid) !== -1);
+    });
+    pills.forEach(function (p) { p.setAttribute("aria-selected", p.getAttribute("data-view") === name ? "true" : "false"); });
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  }
+
+  document.querySelectorAll("[data-view]").forEach(function (btn) {
+    btn.addEventListener("click", function () { activateView(btn.getAttribute("data-view")); });
+  });
+
+  /* ---------------- Sub-vistas de Panel estructura ---------------- */
+  var subPanels = Array.prototype.slice.call(document.querySelectorAll("[data-subpanel]"));
+  var subNavPills = Array.prototype.slice.call(document.querySelectorAll("#subnav-estructura .nav-pill"));
+
+  function activateSubView(name) {
+    subPanels.forEach(function (p) { p.hidden = p.getAttribute("data-subpanel") !== name; });
+    subNavPills.forEach(function (p) { p.setAttribute("aria-selected", p.getAttribute("data-subview") === name ? "true" : "false"); });
+  }
+
+  subNavPills.forEach(function (btn) {
+    btn.addEventListener("click", function () { activateSubView(btn.getAttribute("data-subview")); });
+  });
+
+  /* ---------------- Vistas por nivel de gobierno (rol) ---------------- */
+  var ROLE_TEXT = {
+    pmo: "Tienes acceso completo al marco general, la normativa aplicable, los indicadores y el modelo de priorización de CIRO.",
+    gobierno: "Vista Gobierno CIRO — responde a «¿qué debemos aprobar, priorizar, acelerar, detener o desbloquear?». En Panel económico ve el portafolio de costo-beneficio; en Panel estructura ve los datos operativos en vivo: backlog priorizado, paneles de seguimiento y estado del país."
+  };
+  var rolePills = Array.prototype.slice.call(document.querySelectorAll(".role-pill"));
+  var navTabPills = Array.prototype.slice.call(document.querySelectorAll("#nav-scroll .nav-pill"));
+  var roleBannerText = document.getElementById("role-banner-text");
+
+  function applyRole(role) {
+    rolePills.forEach(function (p) { p.setAttribute("aria-pressed", p.getAttribute("data-role") === role ? "true" : "false"); });
+    var activePill = null, firstVisible = null;
+    navTabPills.forEach(function (p) {
+      var roles = (p.getAttribute("data-roles") || "").split(" ");
+      var visible = roles.indexOf(role) !== -1;
+      p.hidden = !visible;
+      if (visible && !firstVisible) firstVisible = p;
+      if (p.getAttribute("aria-selected") === "true") activePill = p;
+    });
+    document.querySelectorAll("[data-roles-content]").forEach(function (el) {
+      var roles = (el.getAttribute("data-roles-content") || "").split(" ");
+      el.hidden = roles.indexOf(role) === -1;
+    });
+    if (roleBannerText) roleBannerText.textContent = ROLE_TEXT[role] || "";
+    if ((!activePill || activePill.hidden) && firstVisible) activateView(firstVisible.getAttribute("data-view"));
+    try { localStorage.setItem("ciro-role", role); } catch (e) {}
+  }
+
+  rolePills.forEach(function (btn) {
+    btn.addEventListener("click", function () { applyRole(btn.getAttribute("data-role")); });
+  });
+
+  var savedRole = "pmo";
+  try { savedRole = localStorage.getItem("ciro-role") || "pmo"; } catch (e) {}
+  applyRole(savedRole);
+
+  /* ---------------- Backlog: stats, tabla, filtros, orden ---------------- */
+  var statsWrap = document.getElementById("backlog-stats");
+  var counts = { "Crítica": 0, "Alta": 0, "Backlog": 0, "No priorizada": 0 };
+  BACKLOG.forEach(function (r) { counts[r.clase]++; });
+  var empatadasCount = BACKLOG.filter(function (r) { return r.empatada; }).length;
+  var empatePct = empatadasCount ? BACKLOG.filter(function (r) { return r.empatada; })[0].pct : null;
+  statsWrap.innerHTML =
+    '<div class="stat-tile"><div class="stat-num">' + BACKLOG.length + '</div><div class="stat-label">Candidatos calificados</div></div>' +
+    '<div class="stat-tile"><div class="stat-num" style="color:var(--rank-critica)">' + counts["Crítica"] + '</div><div class="stat-label">Crítica (≥ 80%)</div></div>' +
+    '<div class="stat-tile"><div class="stat-num" style="color:var(--rank-alta)">' + counts["Alta"] + '</div><div class="stat-label">Alta (60–79%)</div></div>' +
+    '<div class="stat-tile"><div class="stat-num" style="color:var(--rank-backlog)">' + counts["Backlog"] + '</div><div class="stat-label">Backlog (40–59%)</div></div>' +
+    '<div class="stat-tile is-warn"><div class="stat-num">20/' + BACKLOG.length + '</div><div class="stat-label">' + (empatadasCount ? 'Cupos del portafolio — ' + empatadasCount + ' empatadas en ' + empatePct + '%' : 'Cupos del portafolio') + '</div></div>';
+
+  var sortState = { key: "pct", dir: "desc" };
+  var activeFilters = { "Crítica": true, "Alta": true, "Backlog": true };
+  var soloTop20 = true;
+  var searchTerm = "";
+
+  function scoreBarHtml(r) {
+    return '<div class="score-cell"><div class="score-bar"><div class="score-bar-fill" style="width:' + r.pct + '%; background:var(' + r.rankVar + ')"></div></div><span class="score-pct">' + r.pct + '%</span></div>';
+  }
+
+  function renderBacklog() {
+    var rows = BACKLOG.filter(function (r) {
+      if (r.clase !== "No priorizada" && !activeFilters[r.clase]) return false;
+      if (soloTop20 && !r.top20) return false;
+      if (searchTerm) {
+        var hay = (r.nombre + " " + r.area).toLowerCase();
+        if (hay.indexOf(searchTerm) === -1) return false;
+      }
+      return true;
+    });
+
+    rows.sort(function (a, b) {
+      var av = a[sortState.key], bv = b[sortState.key];
+      if (typeof av === "string") { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+      if (av < bv) return sortState.dir === "asc" ? -1 : 1;
+      if (av > bv) return sortState.dir === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    var html = "";
+    var shownRank = 0;
+    rows.forEach(function (r) {
+      var trClasses = [];
+      if (r.empatada) trClasses.push("is-tied");
+      if (r.fueraDePortafolio) trClasses.push("is-cut");
+      html += '<tr class="' + trClasses.join(" ") + '">' +
+        '<td class="num">' + r.id + '</td>' +
+        '<td>' + r.nombre + (r.empatada ? ' <span class="badge badge--tie">empate ' + r.pct + '%</span>' : '') + (r.ficha ? ' <button type="button" class="badge badge--ok" style="border:none;cursor:pointer" onclick="window.ciroVerFicha()">📄 Ficha</button>' : '') + '</td>' +
+        '<td>' + r.area + (r.areaInferida ? ' <span style="color:var(--ink-faint)">·</span>' : '') + '</td>' +
+        '<td class="num">' + r.legal + '</td>' +
+        '<td class="num">' + r.fin + '</td>' +
+        '<td class="num">' + r.efic + '</td>' +
+        '<td>' + scoreBarHtml(r) + '</td>' +
+        '<td><span class="badge ' + r.badgeClass + '">' + r.clase + '</span></td>' +
+        '</tr>';
+    });
+    document.getElementById("backlog-tbody").innerHTML = html || '<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--ink-faint)">Sin resultados para este filtro.</td></tr>';
+    document.getElementById("backlog-count").textContent = rows.length + " de " + BACKLOG.length + " iniciativas";
+  }
+
+  document.getElementById("backlog-search").addEventListener("input", function (e) {
+    searchTerm = e.target.value.trim().toLowerCase();
+    renderBacklog();
+  });
+
+  document.querySelectorAll(".filter-chip[data-filter]").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      var f = chip.getAttribute("data-filter");
+      activeFilters[f] = !activeFilters[f];
+      chip.setAttribute("aria-pressed", activeFilters[f] ? "true" : "false");
+      renderBacklog();
+    });
+  });
+
+  var top20Toggle = document.getElementById("backlog-top20-toggle");
+  if (top20Toggle) {
+    top20Toggle.addEventListener("click", function () {
+      soloTop20 = !soloTop20;
+      top20Toggle.setAttribute("aria-pressed", soloTop20 ? "true" : "false");
+      top20Toggle.textContent = soloTop20 ? "Solo Top 20" : "Ver todas (" + BACKLOG.length + ")";
+      renderBacklog();
+    });
+  }
+
+  document.querySelectorAll("th.sortable").forEach(function (th) {
+    th.addEventListener("click", function () {
+      var key = th.getAttribute("data-key");
+      if (sortState.key === key) { sortState.dir = sortState.dir === "asc" ? "desc" : "asc"; }
+      else { sortState.key = key; sortState.dir = key === "id" ? "asc" : "desc"; }
+      document.querySelectorAll("th.sortable").forEach(function (t) { t.classList.toggle("is-active", t === th); });
+      renderBacklog();
+    });
+  });
+
+  renderBacklog();
+
+  /* ---------------- Panel 1 — derivado del backlog (top 18 + 4 empatadas) ---------------- */
+  var panel1Rows = BACKLOG.filter(function (r) { return !r.fueraDePortafolio; })
+    .sort(function (a, b) { return b.pct - a.pct; });
+  var panel1Html = "";
+  panel1Rows.forEach(function (r, i) {
+    panel1Html += '<tr' + (r.empatada ? ' class="is-tied"' : '') + '>' +
+      '<td class="num">' + (i + 1) + '</td>' +
+      '<td>' + r.nombre + '</td>' +
+      '<td>' + r.area + '</td>' +
+      '<td><span class="badge ' + r.badgeClass + '">' + r.pct + '% · ' + r.clase + '</span></td>' +
+      '<td>' + (r.ficha ? '<span class="badge badge--ok">En producción desde may-2026</span>' : '<span class="badge badge--pending">Pendiente</span>') + '</td>' +
+      '</tr>';
+  });
+  document.getElementById("panel1-tbody").innerHTML = panel1Html;
+
+  /* ---------------- Calculadora de evaluación económica (Panel económico) ---------------- */
+  (function () {
+    var editingId = null;
+
+    var f = {
+      nombre: document.getElementById("econ-nombre"),
+      area: document.getElementById("econ-area"),
+      lider: document.getElementById("econ-lider"),
+      responsable: document.getElementById("econ-responsable"),
+      estado: document.getElementById("econ-estado"),
+      categoria: document.getElementById("econ-categoria"),
+      descripcion: document.getElementById("econ-descripcion"),
+      frecuencia: document.getElementById("econ-frecuencia"),
+      tiempoActual: document.getElementById("econ-tiempo-actual"),
+      volumen: document.getElementById("econ-volumen"),
+      personas: document.getElementById("econ-personas"),
+      salario: document.getElementById("econ-salario"),
+      factorPrestacional: document.getElementById("econ-factor-prestacional"),
+      auxilio: document.getElementById("econ-auxilio"),
+      horasMensuales: document.getElementById("econ-horas-mensuales"),
+      otrosCostosActualMensual: document.getElementById("econ-otros-actual"),
+      tiempoFuturo: document.getElementById("econ-tiempo-futuro"),
+      opexIncrementalMensual: document.getElementById("econ-opex-incremental"),
+      ejecucionesRealizadas: document.getElementById("econ-ejecuciones-realizadas"),
+      ahorroEfectivo: document.getElementById("econ-ahorro-efectivo"),
+      inversionInicial: document.getElementById("econ-inversion"),
+      horizonte: document.getElementById("econ-horizonte"),
+      tasaDescuento: document.getElementById("econ-tasa-descuento")
+    };
+    var capexNo = document.getElementById("econ-capex-no");
+    var capexSi = document.getElementById("econ-capex-si");
+    var capexFields = document.getElementById("econ-capex-fields");
+    var requiereCapex = false;
+
+    function setCapex(req) {
+      requiereCapex = req;
+      capexNo.setAttribute("aria-pressed", req ? "false" : "true");
+      capexSi.setAttribute("aria-pressed", req ? "true" : "false");
+      capexFields.hidden = !req;
+      renderResultado();
+    }
+    capexNo.addEventListener("click", function () { setCapex(false); });
+    capexSi.addEventListener("click", function () { setCapex(true); });
+
+    function leerFormulario() {
+      return {
+        nombre: f.nombre.value.trim(), area: f.area.value.trim(), lider: f.lider.value.trim(),
+        responsable: f.responsable.value.trim(), estado: f.estado.value, categoria: f.categoria.value.trim(),
+        descripcion: f.descripcion.value.trim(),
+        frecuencia: f.frecuencia.value, tiempoActual: f.tiempoActual.value, volumen: f.volumen.value,
+        personas: f.personas.value, salario: f.salario.value, factorPrestacional: f.factorPrestacional.value,
+        auxilio: f.auxilio.value, horasMensuales: f.horasMensuales.value,
+        otrosCostosActualMensual: f.otrosCostosActualMensual.value,
+        tiempoFuturo: f.tiempoFuturo.value, opexIncrementalMensual: f.opexIncrementalMensual.value,
+        ejecucionesRealizadas: f.ejecucionesRealizadas.value, ahorroEfectivo: f.ahorroEfectivo.value,
+        requiereCapex: requiereCapex,
+        inversionInicial: f.inversionInicial.value, horizonte: f.horizonte.value, tasaDescuento: f.tasaDescuento.value
+      };
+    }
+
+    function escribirFormulario(d) {
+      f.nombre.value = d.nombre || ""; f.area.value = d.area || ""; f.lider.value = d.lider || "";
+      f.responsable.value = d.responsable || ""; f.estado.value = d.estado || "Propuesta";
+      f.categoria.value = d.categoria || ""; f.descripcion.value = d.descripcion || "";
+      f.frecuencia.value = d.frecuencia != null ? d.frecuencia : 12;
+      f.tiempoActual.value = d.tiempoActual != null ? d.tiempoActual : "";
+      f.volumen.value = d.volumen != null ? d.volumen : "";
+      f.personas.value = d.personas != null ? d.personas : 1;
+      f.salario.value = d.salario != null ? d.salario : "";
+      f.factorPrestacional.value = d.factorPrestacional != null ? d.factorPrestacional : "";
+      f.auxilio.value = d.auxilio != null ? d.auxilio : 0;
+      f.horasMensuales.value = d.horasMensuales != null ? d.horasMensuales : 168;
+      f.otrosCostosActualMensual.value = d.otrosCostosActualMensual != null ? d.otrosCostosActualMensual : 0;
+      f.tiempoFuturo.value = d.tiempoFuturo != null ? d.tiempoFuturo : "";
+      f.opexIncrementalMensual.value = d.opexIncrementalMensual != null ? d.opexIncrementalMensual : 0;
+      f.ejecucionesRealizadas.value = d.ejecucionesRealizadas != null ? d.ejecucionesRealizadas : "";
+      f.ahorroEfectivo.value = d.ahorroEfectivo != null ? d.ahorroEfectivo : "";
+      f.inversionInicial.value = d.inversionInicial != null ? d.inversionInicial : "";
+      f.horizonte.value = d.horizonte != null ? d.horizonte : 3;
+      f.tasaDescuento.value = d.tasaDescuento != null ? d.tasaDescuento : "";
+      setCapex(!!d.requiereCapex);
+    }
+
+    function limpiarFormulario() {
+      editingId = null;
+      escribirFormulario({});
+      renderResultado();
+    }
+
+    function tile(label, value, note, isNa) {
+      return '<div class="result-tile' + (isNa ? " is-na" : "") + '"><div class="r-label">' + label + '</div><div class="r-value">' + value + '</div>' + (note ? '<div class="r-note">' + note + '</div>' : '') + '</div>';
+    }
+
+    function renderResultado() {
+      var d = leerFormulario();
+      var r = EconEngine.evaluar(d);
+      var out = document.getElementById("econ-resultado");
+      if (r.datosInsuficientes) {
+        out.innerHTML = tile("Estado", "Datos insuficientes", "Completa salario, factor prestacional, horas, tiempo actual, tiempo futuro y frecuencia para calcular.", true);
+        return;
+      }
+      var html = "";
+      html += tile("Costo-hora cargado", fmtCOP(r.costoHora), "salario × (1+factor prestacional) ÷ horas mensuales");
+      html += tile("Horas liberadas / ejecución", fmtHoras(r.horasLiberadasPorEjecucion), "reducción " + fmtPct(r.reduccionPct) + " · " + (r.factorVelocidad ? (Math.round(r.factorVelocidad * 10) / 10) + "x" : "—"));
+      html += tile("Horas liberadas / año", fmtHoras(r.horasLiberadasAnuales), "");
+      html += tile("OPEX actual / año", fmtCOP(r.opexActualAnual), "");
+      html += tile("OPEX futuro / año", fmtCOP(r.opexFuturoAnual), "");
+      html += tile("Beneficio OPEX / mes", fmtCOP(r.beneficioMensual), "");
+      html += tile("Beneficio OPEX / año", fmtCOP(r.beneficioOpexAnual), "valor de capacidad liberada, no ahorro confirmado");
+      html += tile("Ahorro efectivo", r.ahorroEfectivo != null ? fmtCOP(r.ahorroEfectivo) : "No confirmado", r.ahorroEfectivo != null ? "Reducción real de gasto confirmada" : "Ver capacidad liberada", r.ahorroEfectivo == null);
+      if (r.beneficioAcumuladoAFecha != null) {
+        html += tile("Beneficio acumulado a la fecha", fmtCOP(r.beneficioAcumuladoAFecha), r.ejecucionesRealizadas + " ejecuciones realizadas");
+      }
+      html += tile("CAPEX", r.capex != null ? fmtCOP(r.capex) : "No requerido", "", r.capex == null);
+      html += tile("ROI", typeof r.roi === "number" ? fmtPct(r.roi) : r.roi, "", typeof r.roi !== "number");
+      html += tile("Payback", typeof r.payback === "number" ? (Math.round(r.payback * 10) / 10) + " años" : r.payback, "", typeof r.payback !== "number");
+      html += tile("VPN", typeof r.vpn === "number" ? fmtCOP(r.vpn) : r.vpn, "", typeof r.vpn !== "number");
+      html += tile("TIR", typeof r.tir === "number" ? fmtPct(r.tir) : r.tir, "", typeof r.tir !== "number");
+      out.innerHTML = html;
+    }
+
+    Object.keys(f).forEach(function (k) {
+      if (f[k]) f[k].addEventListener("input", renderResultado);
+      if (f[k] && f[k].tagName === "SELECT") f[k].addEventListener("change", renderResultado);
+    });
+
+    function slugify(s) {
+      return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || ("iniciativa-" + Date.now());
+    }
+
+    function listaHtml(pares) {
+      var html = '<ul style="padding-left:18px; display:flex; flex-direction:column; gap:4px">';
+      pares.forEach(function (p) {
+        html += '<li style="font-size:13px;color:var(--ink-muted)">' + p[0] + ': <b style="color:var(--ink)">' + p[1] + '</b></li>';
+      });
+      return html + '</ul>';
+    }
+
+    function renderIndicadores() {
+      var list = loadIniciativasEcon();
+      var totalBeneficioAnual = 0, totalBeneficioMensual = 0, totalHorasLiberadas = 0;
+      var sumaReduccion = 0, countReduccion = 0, countAhorroConfirmado = 0;
+      list.forEach(function (it) {
+        var r = EconEngine.evaluar(it);
+        if (r.datosInsuficientes) return;
+        totalBeneficioAnual += r.beneficioOpexAnual;
+        totalBeneficioMensual += r.beneficioMensual;
+        totalHorasLiberadas += r.horasLiberadasAnuales;
+        if (r.reduccionPct != null) { sumaReduccion += r.reduccionPct; countReduccion++; }
+        if (r.ahorroEfectivo != null) countAhorroConfirmado++;
+      });
+      var reduccionPromedio = countReduccion ? sumaReduccion / countReduccion : null;
+
+      var elValor = document.getElementById("indicadores-valor");
+      if (elValor) {
+        elValor.innerHTML =
+          '<div class="stat-tile"><div class="stat-num">' + fmtCOP(totalBeneficioMensual) + '</div><div class="stat-label">Beneficio económico total / mes</div></div>' +
+          '<div class="stat-tile"><div class="stat-num">' + fmtCOP(totalBeneficioAnual) + '</div><div class="stat-label">Beneficio económico total / año</div></div>' +
+          '<div class="stat-tile"><div class="stat-num">' + fmtHoras(totalHorasLiberadas) + '</div><div class="stat-label">Horas liberadas / año (todas las iniciativas)</div></div>' +
+          '<div class="stat-tile"><div class="stat-num">' + (reduccionPromedio != null ? fmtPct(reduccionPromedio) : "—") + '</div><div class="stat-label">Reducción de tiempo promedio</div></div>' +
+          '<div class="stat-tile"><div class="stat-num">' + countAhorroConfirmado + ' / ' + list.length + '</div><div class="stat-label">Con ahorro efectivo confirmado (el resto es capacidad liberada)</div></div>';
+      }
+
+      var elResumenValor = document.getElementById("resumen-valor");
+      if (elResumenValor) {
+        elResumenValor.innerHTML =
+          '<div class="stat-tile"><div class="stat-num">' + list.length + '</div><div class="stat-label">Iniciativas con caso económico registrado</div></div>' +
+          '<div class="stat-tile"><div class="stat-num">' + fmtCOP(totalBeneficioMensual) + '</div><div class="stat-label">Beneficio económico / mes</div></div>' +
+          '<div class="stat-tile"><div class="stat-num">' + fmtCOP(totalBeneficioAnual) + '</div><div class="stat-label">Beneficio económico / año</div></div>' +
+          '<div class="stat-tile"><div class="stat-num">' + fmtHoras(totalHorasLiberadas) + '</div><div class="stat-label">Horas liberadas / año</div></div>';
+      }
+
+      var elEstado = document.getElementById("indicadores-estado");
+      if (elEstado) {
+        var estados = { "Propuesta": 0, "En evaluación": 0, "Aprobada": 0, "En ejecución": 0, "Finalizada": 0 };
+        list.forEach(function (it) { estados[it.estado] = (estados[it.estado] || 0) + 1; });
+        elEstado.innerHTML = listaHtml(Object.keys(estados).map(function (k) { return [k, estados[k]]; }));
+      }
+
+      var elBacklog = document.getElementById("indicadores-backlog");
+      if (elBacklog) {
+        var clasif = { "Crítica": 0, "Alta": 0, "Backlog": 0, "No priorizada": 0 };
+        BACKLOG.forEach(function (r) { clasif[r.clase] = (clasif[r.clase] || 0) + 1; });
+        elBacklog.innerHTML = listaHtml(Object.keys(clasif).filter(function (k) { return clasif[k] > 0; }).map(function (k) { return [k, clasif[k]]; }));
+      }
+
+      var elProy = document.getElementById("indicadores-proyeccion");
+      if (elProy) {
+        if (!totalBeneficioMensual) {
+          elProy.innerHTML = '<div class="panel-empty">Sin datos suficientes todavía.</div>';
+        } else {
+          var maxAcum = totalBeneficioMensual * 6, rowsP = "";
+          for (var mIdx = 1; mIdx <= 6; mIdx++) {
+            var acumP = totalBeneficioMensual * mIdx;
+            var pctP = Math.round(acumP / maxAcum * 100);
+            rowsP += '<div style="display:flex; align-items:center; gap:10px; margin-top:' + (mIdx === 1 ? 0 : 8) + 'px">' +
+              '<span style="width:52px; font-size:12px; color:var(--ink-faint)">Mes ' + mIdx + '</span>' +
+              '<div class="score-bar" style="flex:1; width:auto"><div class="score-bar-fill" style="width:' + pctP + '%; background:var(--status-ok)"></div></div>' +
+              '<span style="width:120px; text-align:right; font-size:12.5px; font-weight:700">' + fmtCOP(acumP) + '</span>' +
+              '</div>';
+          }
+          elProy.innerHTML = rowsP;
+        }
+      }
+
+      var elRank = document.getElementById("indicadores-ranking");
+      if (elRank) {
+        var conDatos = list.map(function (it) { return { it: it, r: EconEngine.evaluar(it) }; }).filter(function (x) { return !x.r.datosInsuficientes; });
+        conDatos.sort(function (a, b) { return b.r.beneficioOpexAnual - a.r.beneficioOpexAnual; });
+        if (!conDatos.length) {
+          elRank.innerHTML = '<div class="panel-empty">Aún no hay iniciativas con datos suficientes.</div>';
+        } else {
+          var rowsR = '<div class="table-wrap" style="border:none"><table class="data-table"><thead><tr><th class="num">#</th><th>Iniciativa</th><th>Área</th><th class="num">Beneficio/año</th></tr></thead><tbody>';
+          conDatos.forEach(function (x, i) {
+            rowsR += '<tr><td class="num">' + (i + 1) + '</td><td>' + x.it.nombre + '</td><td>' + (x.it.area || "—") + '</td><td class="num">' + fmtCOP(x.r.beneficioOpexAnual) + '</td></tr>';
+          });
+          rowsR += '</tbody></table></div>';
+          elRank.innerHTML = rowsR;
+        }
+      }
+
+      var elSem = document.getElementById("indicadores-semaforo");
+      if (elSem) {
+        var areaSinConfirmar = BACKLOG.filter(function (r) { return r.areaInferida; }).length;
+        var empatadasBacklog = BACKLOG.filter(function (r) { return r.empatada; }).length;
+        var sinRiesgo = BACKLOG.length - areaSinConfirmar - empatadasBacklog;
+        elSem.innerHTML =
+          '<div class="stat-tile is-blocked"><div class="stat-num">' + areaSinConfirmar + '</div><div class="stat-label">🔴 Área líder sin confirmar</div></div>' +
+          '<div class="stat-tile is-warn"><div class="stat-num">' + empatadasBacklog + '</div><div class="stat-label">🟡 Empatadas en el límite del portafolio</div></div>' +
+          '<div class="stat-tile"><div class="stat-num">' + sinRiesgo + '</div><div class="stat-label">🟢 Sin riesgo de datos identificado</div></div>';
+      }
+    }
+
+    function evaluacionFinanciera(r) {
+      if (!r.requiereCapex) return { estado: "No aplica", detalle: "" };
+      var partes = [];
+      if (typeof r.roi === "number") partes.push("ROI " + fmtPct(r.roi));
+      if (typeof r.payback === "number") partes.push("Payback " + (Math.round(r.payback * 10) / 10) + " años");
+      if (typeof r.vpn === "number") partes.push("VPN " + fmtCOP(r.vpn));
+      if (typeof r.tir === "number") partes.push("TIR " + fmtPct(r.tir));
+      if (!partes.length) return { estado: "Pendiente de información", detalle: "" };
+      var completa = typeof r.roi === "number" && typeof r.payback === "number" && typeof r.vpn === "number" && typeof r.tir === "number";
+      return { estado: completa ? "Completa" : "Parcial", detalle: partes.join(" · ") };
+    }
+
+    function renderPortafolio() {
+      var list = loadIniciativasEcon();
+      var tbody = document.getElementById("econ-portafolio-tbody");
+      var totales = { opexActual: 0, opexFuturo: 0, beneficio: 0, horasLiberadas: 0, capex: 0, enEjecucion: 0 };
+      var evalCounts = { "Completa": 0, "Parcial": 0, "No aplica": 0, "Pendiente de información": 0 };
+      var conEvaluacionEconomica = 0;
+      var rows = "";
+      list.forEach(function (it) {
+        var r = EconEngine.evaluar(it);
+        if (it.estado === "En ejecución") totales.enEjecucion++;
+        if (r.datosInsuficientes) {
+          evalCounts["Pendiente de información"]++;
+          rows += '<tr id="econ-row-' + it.id + '"><td>' + it.nombre + '</td><td>' + (it.area || "—") + '</td><td>' + (it.estado || "—") + '</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="badge badge--pending">Pendiente de información</span></td><td></td></tr>';
+          return;
+        }
+        conEvaluacionEconomica++;
+        totales.opexActual += r.opexActualAnual;
+        totales.opexFuturo += r.opexFuturoAnual;
+        totales.beneficio += r.beneficioOpexAnual;
+        totales.horasLiberadas += r.horasLiberadasAnuales;
+        if (r.capex) totales.capex += r.capex;
+        var evalFin = evaluacionFinanciera(r);
+        evalCounts[evalFin.estado]++;
+        var evalBadgeClass = evalFin.estado === "Completa" ? "badge--ok" : evalFin.estado === "Parcial" ? "badge--warn" : evalFin.estado === "No aplica" ? "badge--pending" : "badge--warn";
+        rows += '<tr id="econ-row-' + it.id + '">' +
+          '<td>' + it.nombre + '</td>' +
+          '<td>' + (it.area || "—") + '</td>' +
+          '<td>' + (it.estado || "—") + '</td>' +
+          '<td class="num">' + fmtCOP(r.opexActualAnual) + '</td>' +
+          '<td class="num">' + fmtCOP(r.opexFuturoAnual) + '</td>' +
+          '<td class="num">' + fmtCOP(r.beneficioMensual) + '</td>' +
+          '<td class="num">' + fmtCOP(r.beneficioOpexAnual) + '</td>' +
+          '<td class="num">' + fmtHoras(r.horasLiberadasAnuales) + '</td>' +
+          '<td class="num">' + (r.capex ? fmtCOP(r.capex) : "No requerido") + '</td>' +
+          '<td><span class="badge ' + evalBadgeClass + '">' + evalFin.estado + (evalFin.detalle ? " — " + evalFin.detalle : "") + '</span></td>' +
+          '<td class="econ-row-actions"><button type="button" class="icon-btn" data-edit="' + it.id + '">Editar</button><button type="button" class="icon-btn" data-del="' + it.id + '">Eliminar</button></td>' +
+          '</tr>';
+      });
+      tbody.innerHTML = rows || '<tr><td colspan="11" style="text-align:center; padding:24px; color:var(--ink-faint)">Aún no hay iniciativas registradas.</td></tr>';
+
+      var elResumen = document.getElementById("gob-econ-resumen");
+      if (elResumen) {
+        elResumen.innerHTML =
+          tile("Iniciativas con evaluación económica", conEvaluacionEconomica, list.length + " registradas en total") +
+          tile("Beneficio económico anual", fmtCOP(totales.beneficio), "") +
+          tile("Capacidad liberada anual", fmtHoras(totales.horasLiberadas), "") +
+          tile("CAPEX requerido", fmtCOP(totales.capex), "") +
+          tile("Iniciativas en ejecución", totales.enEjecucion, "");
+      }
+
+      var elNarrativa = document.getElementById("gob-econ-narrativa");
+      if (elNarrativa) {
+        if (!conEvaluacionEconomica) {
+          elNarrativa.textContent = "Aún no hay iniciativas con información económica registrada.";
+        } else {
+          var texto = "Las iniciativas con información económica registrada representan actualmente un " +
+            "beneficio anual consolidado de " + fmtCOP(totales.beneficio) + " y una capacidad liberada de " +
+            fmtHoras(totales.horasLiberadas) + " al año. ";
+          texto += totales.capex > 0
+            ? "El portafolio requiere una inversión de capital de " + fmtCOP(totales.capex) + "."
+            : "Las iniciativas registradas actualmente no requieren inversión de capital.";
+          elNarrativa.textContent = texto;
+        }
+      }
+
+      var elEval = document.getElementById("gob-econ-evaluacion");
+      if (elEval) {
+        elEval.innerHTML =
+          tile("Evaluación completa", evalCounts["Completa"], "") +
+          tile("Evaluación parcial", evalCounts["Parcial"], "") +
+          tile("No aplica", evalCounts["No aplica"], "") +
+          tile("Pendiente de información", evalCounts["Pendiente de información"], "");
+      }
+
+      var enTramite = list.filter(function (it) { return it.estado === "En ejecución"; });
+      var panel2Badge = document.getElementById("panel2-badge");
+      var panel2Body = document.getElementById("panel2-body");
+      if (panel2Badge && panel2Body) {
+        if (!enTramite.length) {
+          panel2Badge.className = "badge badge--pending";
+          panel2Badge.textContent = "Vacío";
+          panel2Body.innerHTML = '<div class="panel-empty">Ninguna iniciativa tiene el estado «En ejecución» todavía.</div>';
+        } else {
+          panel2Badge.className = "badge badge--ok";
+          panel2Badge.textContent = enTramite.length + (enTramite.length === 1 ? " activa" : " activas");
+          var rows2 = "";
+          enTramite.forEach(function (it) {
+            var r2 = EconEngine.evaluar(it);
+            rows2 += '<tr>' +
+              '<td>' + it.nombre + '</td>' +
+              '<td>' + (it.area || "—") + '</td>' +
+              '<td>' + (it.responsable || "—") + '</td>' +
+              '<td class="num">' + (r2.datosInsuficientes ? "—" : fmtCOP(r2.beneficioMensual)) + '</td>' +
+              '</tr>';
+          });
+          panel2Body.innerHTML = '<div class="table-wrap" style="border:none; border-radius:0"><table class="data-table"><thead><tr><th>Iniciativa</th><th>Área</th><th>Responsable</th><th class="num">Beneficio/mes</th></tr></thead><tbody>' + rows2 + '</tbody></table></div>';
+        }
+      }
+
+      var finalizadas = list.filter(function (it) { return it.estado === "Finalizada"; });
+      var panel3Badge = document.getElementById("panel3-badge");
+      var panel3Body = document.getElementById("panel3-body");
+      if (panel3Badge && panel3Body) {
+        if (!finalizadas.length) {
+          panel3Badge.className = "badge badge--pending";
+          panel3Badge.textContent = "Vacío";
+          panel3Body.innerHTML = '<div class="panel-empty">Ninguna iniciativa tiene el estado «Finalizada» todavía.</div>';
+        } else {
+          panel3Badge.className = "badge badge--ok";
+          panel3Badge.textContent = finalizadas.length + (finalizadas.length === 1 ? " cerrada" : " cerradas");
+          var rows3 = "";
+          finalizadas.forEach(function (it) {
+            var r3 = EconEngine.evaluar(it);
+            rows3 += '<tr>' +
+              '<td>' + it.nombre + '</td>' +
+              '<td>' + (it.area || "—") + '</td>' +
+              '<td class="num">' + (r3.datosInsuficientes ? "—" : fmtCOP(r3.beneficioOpexAnual)) + '</td>' +
+              '<td>' + (r3.datosInsuficientes ? "—" : (r3.ahorroEfectivo != null ? fmtCOP(r3.ahorroEfectivo) + " confirmado" : "No confirmado (capacidad liberada)")) + '</td>' +
+              '</tr>';
+          });
+          panel3Body.innerHTML = '<div class="table-wrap" style="border:none; border-radius:0"><table class="data-table"><thead><tr><th>Iniciativa</th><th>Área</th><th class="num">Beneficio/año</th><th>Ahorro efectivo</th></tr></thead><tbody>' + rows3 + '</tbody></table></div>';
+        }
+      }
+
+      renderIndicadores();
+
+      tbody.querySelectorAll("[data-edit]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var it = loadIniciativasEcon().filter(function (x) { return x.id === btn.getAttribute("data-edit"); })[0];
+          if (!it) return;
+          editingId = it.id;
+          escribirFormulario(it);
+          renderResultado();
+          activateView("estructura");
+          activateSubView("solicitudes");
+          setTimeout(function () {
+            document.getElementById("econ-nombre").scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 30);
+        });
+      });
+      tbody.querySelectorAll("[data-del]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var id = btn.getAttribute("data-del");
+          var list2 = loadIniciativasEcon().filter(function (x) { return x.id !== id; });
+          saveIniciativasEcon(list2);
+          if (editingId === id) limpiarFormulario();
+          renderPortafolio();
+        });
+      });
+    }
+
+    document.getElementById("econ-guardar").addEventListener("click", function () {
+      var d = leerFormulario();
+      if (!d.nombre) { f.nombre.focus(); return; }
+      d.id = editingId || slugify(d.nombre);
+      var list = loadIniciativasEcon();
+      var idx = list.findIndex(function (x) { return x.id === d.id; });
+      if (idx === -1) list.push(d); else list[idx] = d;
+      saveIniciativasEcon(list);
+      editingId = d.id;
+      renderPortafolio();
+    });
+
+    document.getElementById("econ-nueva").addEventListener("click", limpiarFormulario);
+
+    /* Carga inicial: muestra SIMIT (primer registro real) en el formulario */
+    var inicial = loadIniciativasEcon()[0];
+    if (inicial) { editingId = inicial.id; escribirFormulario(inicial); }
+    renderResultado();
+    renderPortafolio();
+
+    window.ciroVerFicha = function () {
+      activateView("f2");
+      setTimeout(function () {
+        var row = document.getElementById("econ-row-simit-consulta");
+        if (row) { row.scrollIntoView({ behavior: "smooth", block: "center" }); }
+      }, 30);
+    };
+
+    var jsonBox = document.getElementById("econ-json");
+    var btnExportar = document.getElementById("econ-exportar");
+    var btnImportar = document.getElementById("econ-importar-btn");
+    if (btnExportar) {
+      btnExportar.addEventListener("click", function () {
+        jsonBox.value = JSON.stringify(loadIniciativasEcon(), null, 2);
+        jsonBox.select();
+      });
+    }
+    if (btnImportar) {
+      btnImportar.addEventListener("click", function () {
+        var raw = jsonBox.value.trim();
+        if (!raw) return;
+        var data;
+        try { data = JSON.parse(raw); } catch (e) { window.alert("El respaldo ingresado no es válido — verifica que esté completo."); return; }
+        if (!Array.isArray(data)) { window.alert("El respaldo ingresado no corresponde a un registro de iniciativas."); return; }
+        saveIniciativasEcon(data);
+        limpiarFormulario();
+        renderPortafolio();
+        window.alert("Restaurado: " + data.length + " iniciativa(s).");
+      });
+    }
+  })();
+
+  /* ---------------- Contadores de cierre — derivados de CHECKLIST (fuente única) ---------------- */
+  var statCounts = { ok: 0, warn: 0, blocked: 0 };
+  CHECKLIST.forEach(function (item) { statCounts[item.s]++; });
+  var statTotal = CHECKLIST.length;
+  ["ok", "warn", "blocked"].forEach(function (k) {
+    document.querySelectorAll('[data-ciro-stat="' + k + '"]').forEach(function (el) { el.textContent = statCounts[k]; });
+    var bar = document.querySelector('[data-ciro-bar="' + k + '"]');
+    if (bar) bar.style.width = (Math.round(statCounts[k] / statTotal * 1000) / 10) + "%";
+  });
+  document.querySelectorAll('[data-ciro-stat="total"]').forEach(function (el) { el.textContent = statTotal; });
+
+})();
+</script>
+</body>
+</html>
