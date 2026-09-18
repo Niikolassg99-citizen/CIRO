@@ -503,7 +503,7 @@
         <div class="section-label">Portafolio</div>
         <div class="stat-grid">
           <div class="stat-tile"><div class="stat-num">148</div><div class="stat-label">Iniciativas identificadas</div></div>
-          <div class="stat-tile"><div class="stat-num">160</div><div class="stat-label">Iniciativas calificadas</div></div>
+          <div class="stat-tile"><div class="stat-num">161</div><div class="stat-label">Iniciativas calificadas</div></div>
           <div class="stat-tile"><div class="stat-num">16</div><div class="stat-label">Candidatos sin ambigüedad en los primeros cupos</div></div>
           <div class="stat-tile"><div class="stat-num">4</div><div class="stat-label">Cupos sujetos a decisión del Gobierno CIRO</div></div>
         </div>
@@ -544,26 +544,45 @@
       </div>
 
       <div class="section">
-        <div class="section-label">Caso destacado de transformación</div>
-        <div class="card">
-          <div class="card-title">Automatización de consulta de conductores activos — SIMIT</div>
-          <p style="font-size:13px; color:var(--ink-muted); margin-top:2px"><b style="color:var(--ink)">Área:</b> Jurídica
-            &nbsp;·&nbsp; <b style="color:var(--ink)">Tecnología:</b> UiPath RPA</p>
-          <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.65; margin-top:10px">La
-            iniciativa automatiza la verificación mensual de conductores activos en SIMIT.</p>
-          <div class="stat-grid" style="margin-top:14px">
-            <div class="stat-tile"><div class="stat-num">210</div><div class="stat-label">Conductores</div></div>
-            <div class="stat-tile"><div class="stat-num">11h → 40min</div><div class="stat-label">Tiempo por ejecución</div></div>
-            <div class="stat-tile"><div class="stat-num">93,9%</div><div class="stat-label">Reducción de tiempo</div></div>
-            <div class="stat-tile"><div class="stat-num">124h</div><div class="stat-label">Capacidad liberada / año</div></div>
+        <div class="section-label">Casos destacados de transformación</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Automatización de consulta de conductores activos — SIMIT</div>
+            <p style="font-size:13px; color:var(--ink-muted); margin-top:2px"><b style="color:var(--ink)">Área:</b> Jurídica
+              &nbsp;·&nbsp; <b style="color:var(--ink)">Tecnología:</b> UiPath RPA</p>
+            <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.65; margin-top:10px">La
+              iniciativa automatiza la verificación mensual de conductores activos en SIMIT.</p>
+            <div class="stat-grid" style="margin-top:14px">
+              <div class="stat-tile"><div class="stat-num">210</div><div class="stat-label">Conductores</div></div>
+              <div class="stat-tile"><div class="stat-num">11h → 40min</div><div class="stat-label">Tiempo por ejecución</div></div>
+              <div class="stat-tile"><div class="stat-num">93,9%</div><div class="stat-label">Reducción de tiempo</div></div>
+              <div class="stat-tile"><div class="stat-num">124h</div><div class="stat-label">Capacidad liberada / año</div></div>
+            </div>
+            <div class="form-actions" style="margin-top:14px">
+              <button type="button" class="btn-primary" onclick="window.ciroVerFicha('simit-consulta')">Ver iniciativa</button>
+            </div>
           </div>
-          <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.65; margin-top:14px">Este caso
-            permite visualizar cómo CIRO conecta una iniciativa de transformación con su medición operativa
-            y económica.</p>
-          <div class="form-actions" style="margin-top:14px">
-            <button type="button" class="btn-primary" onclick="window.ciroVerFicha()">Ver iniciativa</button>
+          <div class="card">
+            <div class="card-title">Estandarización Documental SGI — n8n</div>
+            <p style="font-size:13px; color:var(--ink-muted); margin-top:2px"><b style="color:var(--ink)">Área:</b> Gestión de Calidad
+              &nbsp;·&nbsp; <b style="color:var(--ink)">Tecnología:</b> n8n</p>
+            <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.65; margin-top:10px">Automatiza
+              la adecuación, codificación y generación de documentos del SGI, reemplazando la edición manual
+              y un flujo previo soportado por UiPath.</p>
+            <div class="stat-grid" style="margin-top:14px">
+              <div class="stat-tile"><div class="stat-num">255</div><div class="stat-label">Documentos procesados</div></div>
+              <div class="stat-tile"><div class="stat-num">2,5min → ~43s</div><div class="stat-label">Tiempo por documento</div></div>
+              <div class="stat-tile"><div class="stat-num">≈71%</div><div class="stat-label">Reducción de tiempo</div></div>
+              <div class="stat-tile"><div class="stat-num">≈7,58h</div><div class="stat-label">Capacidad liberada a la fecha</div></div>
+            </div>
+            <div class="form-actions" style="margin-top:14px">
+              <button type="button" class="btn-primary" onclick="window.ciroVerFicha('estandarizacion-documental-sgi')">Ver iniciativa</button>
+            </div>
           </div>
         </div>
+        <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.65; margin-top:14px">Estos casos
+          permiten visualizar cómo CIRO conecta una iniciativa de transformación con su medición operativa
+          y económica.</p>
       </div>
 
       <div class="section">
@@ -978,7 +997,7 @@
         <div class="grid-3">
           <div class="card">
             <div class="card-title">Inventario general</div>
-            <p>Todas las iniciativas identificadas en CT, sin importar su prioridad — 160 en total,
+            <p>Todas las iniciativas identificadas en CT, sin importar su prioridad — 161 en total,
               calificadas sin excepción.
               <span style="display:block; margin-top:6px" class="badge badge--ok">Completo</span></p>
           </div>
@@ -1050,7 +1069,7 @@
               <div id="indicadores-estado"></div>
             </div>
             <div class="card">
-              <div class="card-title">Backlog por clasificación (160 candidatos)</div>
+              <div class="card-title">Backlog por clasificación (161 candidatos)</div>
               <div id="indicadores-backlog"></div>
             </div>
           </div>
@@ -1069,7 +1088,7 @@
         </div>
 
         <div class="section">
-          <div class="section-label">Semáforo de riesgo de datos — backlog (160 candidatos)</div>
+          <div class="section-label">Semáforo de riesgo de datos — backlog (161 candidatos)</div>
           <div class="stat-grid" id="indicadores-semaforo"></div>
         </div>
       </div>
@@ -1255,9 +1274,9 @@
 
       <div data-subpanel="portafolio">
         <div class="section">
-          <div class="section-label">Backlog — 160 candidatos calificados</div>
-          <p class="view-intro" style="margin-top:0">Inventario completo de CIRO: 160 iniciativas identificadas
-            y calificadas sin excepción — 148 del relevamiento general de la organización más 12 incorporadas
+          <div class="section-label">Backlog — 161 candidatos calificados</div>
+          <p class="view-intro" style="margin-top:0">Inventario completo de CIRO: 161 iniciativas identificadas
+            y calificadas sin excepción — 148 del relevamiento general de la organización más 13 incorporadas
             directamente por el Gobierno CIRO. Calificación cualitativa de punto de partida — el Gobierno CIRO
             debe validarla.</p>
         </div>
@@ -1529,6 +1548,7 @@
             <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">28 de agosto de 2026</div><div class="chain-desc">Escala oficial de clasificación del portafolio definida (Crítica / Alta / Backlog / No priorizada).</div></div></div>
             <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">16 de septiembre de 2026</div><div class="chain-desc">Área líder de la Automatización Consulta SIMIT confirmada como Jurídica.</div></div></div>
             <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">17 de septiembre de 2026</div><div class="chain-desc">Costo-hora cargado oficial confirmado; inventario general de 160 iniciativas calificado sin excepción.</div></div></div>
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">18 de septiembre de 2026</div><div class="chain-desc">Iniciativa Estandarización Documental SGI registrada e incorporada al backlog (fila 161, Gestión de Calidad) — automatización real en n8n, en producción desde junio de 2026, con ficha técnica y económica completa.</div></div></div>
           </div>
         </div>
       </div>
@@ -1550,7 +1570,7 @@
 (function () {
   "use strict";
 
-  /* ---------------- Datos del backlog (160 candidatos calificados: 23 + 137 del inventario Excel) ---------------- */
+  /* ---------------- Datos del backlog (161 candidatos calificados: 24 + 137 del inventario Excel) ---------------- */
   /* Score ponderado = legal*0.5 + fin*0.3 + efic*0.2, sobre 5. Fuente: 03-fase-estructura.md §3.5.1 */
   var BACKLOG = [
     { id: 1,  nombre: "Proyecto Torre de Control (incl. integración GPS)", area: "Logística / Torre de Control / Seguridad Física / Facturación", legal: 5, fin: 5, efic: 5 },
@@ -1561,7 +1581,7 @@
     { id: 6,  nombre: "Calendario Tributario Municipal y Nacional", area: "Contabilidad", legal: 5, fin: 3, efic: 3 },
     { id: 7,  nombre: "Decantación Operación Logística (El Dorado)", area: "Logística / Operaciones", areaInferida: true, legal: 3, fin: 5, efic: 4 },
     { id: 8,  nombre: "Recomendador logístico (programador logístico)", area: "Logística / Mantenimiento / Torre de Control / GH / Jurídica", legal: 3, fin: 4, efic: 5 },
-    { id: 9,  nombre: "Automatización Consulta conductores activos SIMIT", area: "Jurídica", legal: 4, fin: 3, efic: 4, ficha: true },
+    { id: 9,  nombre: "Automatización Consulta conductores activos SIMIT", area: "Jurídica", legal: 4, fin: 3, efic: 4, ficha: true, fichaId: "simit-consulta" },
     { id: 10, nombre: "Mejora de conciliación vs. RADIAN", area: "Contabilidad", legal: 4, fin: 3, efic: 3 },
     { id: 11, nombre: "Validaciones de normatividad — JHR Wise vs. normativa municipal", area: "Contabilidad", areaInferida: true, legal: 4, fin: 3, efic: 3 },
     { id: 12, nombre: "Automatización de ingresos por municipio", area: "Contabilidad", legal: 3, fin: 4, efic: 3 },
@@ -1716,7 +1736,8 @@
     { id: 157, nombre: "Desarrollo y preparación del material para nuevas capacitaciones", area: "Formación", legal: 1, fin: 1, efic: 3, inventario148: true },
     { id: 158, nombre: "Optimización de citaciones a capacitaciones", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
     { id: 159, nombre: "Alineación con líderes para mejorar comunicación y flujo de información", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
-    { id: 160, nombre: "Integración del área de Formación en todas las áreas de la empresa", area: "Formación", legal: 2, fin: 2, efic: 2, inventario148: true }
+    { id: 160, nombre: "Integración del área de Formación en todas las áreas de la empresa", area: "Formación", legal: 2, fin: 2, efic: 2, inventario148: true },
+    { id: 161, nombre: "Estandarización Documental SGI", area: "Gestión de Calidad", legal: 4, fin: 3, efic: 5, ficha: true, fichaId: "estandarizacion-documental-sgi" }
   ];
 
   BACKLOG.forEach(function (r) {
@@ -1728,7 +1749,7 @@
     r.badgeClass = r.clase === "Crítica" ? "badge--critica" : r.clase === "Alta" ? "badge--alta" : r.clase === "Backlog" ? "badge--backlog" : "badge--none";
   });
 
-  /* ---------------- Top 20 y empates — calculado en vivo, ya no a mano (160 candidatos) ---------------- */
+  /* ---------------- Top 20 y empates — calculado en vivo, ya no a mano (161 candidatos) ---------------- */
   (function () {
     var ranked = BACKLOG.slice().sort(function (a, b) { return b.pct - a.pct; });
     var boundaryPct = ranked.length > 20 ? ranked[19].pct : null;
@@ -1850,6 +1871,16 @@
       salario: 1750905, factorPrestacional: 25, auxilio: 249095, horasMensuales: 168,
       otrosCostosActualMensual: 0, opexIncrementalMensual: 0, ejecucionesRealizadas: 5, ahorroEfectivo: null,
       requiereCapex: false, inversionInicial: null, horizonte: null, tasaDescuento: null
+    }, {
+      id: "estandarizacion-documental-sgi",
+      nombre: "Estandarización Documental SGI",
+      area: "Gestión de Calidad", lider: "", responsable: "Coordinadora de SGI",
+      estado: "En ejecución", categoria: "Automatización con n8n",
+      descripcion: "Estandarización automática de documentos del SGI (formato, código, versión, nomenclatura) mediante dos workflows n8n — formulario manual y carga masiva por Excel — en reemplazo de la edición manual y de un flujo previo soportado por UiPath.",
+      frecuencia: 255, tiempoActual: 2.5 / 60, tiempoFuturo: 42.98 / 3600, volumen: 255, personas: 1,
+      salario: 3500000, factorPrestacional: 25, auxilio: 0, horasMensuales: 168,
+      otrosCostosActualMensual: 0, opexIncrementalMensual: 0, ejecucionesRealizadas: 255, ahorroEfectivo: null,
+      requiereCapex: false, inversionInicial: null, horizonte: null, tasaDescuento: null
     }];
     saveIniciativasEcon(list);
     return list;
@@ -1863,9 +1894,9 @@
     { n: 4, t: "Gobierno CIRO definido", s: "ok", note: "Cadena de gobierno y niveles de decisión" },
     { n: 5, t: "PMO definido", s: "ok", note: "Rol, alcance y ritmo de gobierno" },
     { n: 6, t: "Metodología de priorización documentada", s: "ok", note: "Criterios, pesos y escala de clasificación" },
-    { n: 7, t: "Inventario general de iniciativas", s: "ok", note: "160 iniciativas calificadas sin excepción" },
+    { n: 7, t: "Inventario general de iniciativas", s: "ok", note: "161 iniciativas calificadas sin excepción" },
     { n: 8, t: "Backlog de reserva", s: "ok", note: "6 iniciativas conservadas, no eliminadas" },
-    { n: 9, t: "Top 20 de iniciativas visibles", s: "warn", note: "160 candidatos calificados para 20 cupos — empate en el puntaje de corte entre varias iniciativas" },
+    { n: 9, t: "Top 20 de iniciativas visibles", s: "warn", note: "161 candidatos calificados para 20 cupos — empate en el puntaje de corte entre varias iniciativas" },
     { n: 10, t: "Modelo económico", s: "ok", note: "Enfoque proporcional sin umbral fijo" },
     { n: 11, t: "Flujo de solicitudes", s: "ok", note: "Registro y cuantificación de nuevas iniciativas" },
     { n: 12, t: "Fuente maestra", s: "warn", note: "Esquema de campos definido; consolidación en repositorio único en actualización" },
@@ -2000,7 +2031,7 @@
       if (r.fueraDePortafolio) trClasses.push("is-cut");
       html += '<tr class="' + trClasses.join(" ") + '">' +
         '<td class="num">' + r.id + '</td>' +
-        '<td>' + r.nombre + (r.empatada ? ' <span class="badge badge--tie">empate ' + r.pct + '%</span>' : '') + (r.ficha ? ' <button type="button" class="badge badge--ok" style="border:none;cursor:pointer" onclick="window.ciroVerFicha()">📄 Ficha</button>' : '') + '</td>' +
+        '<td>' + r.nombre + (r.empatada ? ' <span class="badge badge--tie">empate ' + r.pct + '%</span>' : '') + (r.ficha ? ' <button type="button" class="badge badge--ok" style="border:none;cursor:pointer" onclick="window.ciroVerFicha(\'' + r.fichaId + '\')">📄 Ficha</button>' : '') + '</td>' +
         '<td>' + r.area + (r.areaInferida ? ' <span style="color:var(--ink-faint)">·</span>' : '') + '</td>' +
         '<td class="num">' + r.legal + '</td>' +
         '<td class="num">' + r.fin + '</td>' +
@@ -2480,10 +2511,10 @@
     renderResultado();
     renderPortafolio();
 
-    window.ciroVerFicha = function () {
+    window.ciroVerFicha = function (id) {
       activateView("f2");
       setTimeout(function () {
-        var row = document.getElementById("econ-row-simit-consulta");
+        var row = document.getElementById("econ-row-" + (id || "simit-consulta"));
         if (row) { row.scrollIntoView({ behavior: "smooth", block: "center" }); }
       }, 30);
     };
