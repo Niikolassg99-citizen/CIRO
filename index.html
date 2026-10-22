@@ -1073,6 +1073,14 @@
           presenta para el seguimiento, priorización, decisión y medición del portafolio.</p>
       </div>
 
+      <div class="section">
+        <div class="section-label">Beneficios administrativos y de prevención de errores — iniciativas finalizadas</div>
+        <p class="view-intro" style="margin-top:0">Además del beneficio económico, cada desarrollo o implementación
+          cambia la forma de trabajar: libera carga administrativa y quita pasos manuales donde una persona puede
+          equivocarse. Aquí se resume ese valor para cada iniciativa en estado «Finalizada».</p>
+        <div class="grid-2" id="beneficios-cualitativos"></div>
+      </div>
+
       <div data-roles-content="gobierno">
         <div class="section">
           <div class="section-label">Indicadores de valor — calculados en vivo</div>
@@ -2023,6 +2031,102 @@
   }
   seedSimitSiVacio();
 
+  /* Beneficios administrativos y de prevención de errores humanos de las iniciativas finalizadas (22-oct-2026).
+     Clave: id del caso económico, o "b" + id del backlog si la iniciativa no tiene caso económico.
+     Fuentes: fichas en iniciativas/, CLAUDE.md de Tablero_Costos y levantamiento de Tesorería. */
+  var BENEFICIOS_CUALI = {
+    "simit-consulta": {
+      admin: [
+        "La consulta mensual de 210 conductores pasa de 11 horas a 40 minutos (93,9 % menos tiempo).",
+        "El auxiliar administrativo queda libre para tareas de análisis en lugar de consultar uno por uno en el portal.",
+        "La evidencia se genera sola: captura por conductor, consolidado en Excel y soporte en Word, listos para revisión o auditoría.",
+        "El proceso se ejecuta siempre igual, sin depender de quién esté a cargo ese mes."
+      ],
+      errores: [
+        "Elimina la digitación manual de cédulas en el portal SIMIT, que podía llevar a consultar a la persona equivocada.",
+        "Recorre el listado completo de conductores activos: no se salta ninguno por cansancio u omisión.",
+        "El estado de cuenta se extrae tal como lo reporta SIMIT, sin transcribirlo a mano.",
+        "Previene asignar viajes a conductores con comparendos o impedimentos vigentes (riesgo legal y de responsabilidad para CT)."
+      ]
+    },
+    "estandarizacion-documental-sgi": {
+      admin: [
+        "Formato, código, versión y nomenclatura se aplican automáticamente a cada documento del SGI.",
+        "Atiende documentos sueltos por formulario y lotes masivos por Excel, para un universo de hasta 683 documentos.",
+        "El trabajo de la persona se concentra en preparar la información de entrada, no en editar Word documento por documento.",
+        "Reemplaza el flujo masivo anterior en UiPath con una sola lógica centralizada y administrable en n8n."
+      ],
+      errores: [
+        "Elimina inconsistencias de codificación y nomenclatura que aparecían al asignarlas a mano.",
+        "Todos los documentos quedan con el mismo estándar, sin depender del conocimiento de quien los edita.",
+        "Menos reprocesos por documentos fuera de formato y un sistema documental coherente ante revisiones del SGI."
+      ]
+    },
+    "calendario-tributario": {
+      admin: [
+        "Arma y sigue en un solo sistema 1.901 vencimientos de 95 municipios y la DIAN, que antes tomaban cerca de 4 meses al año.",
+        "Pasa de unas 670 a 115 horas al año: libera cerca de 555 horas de la Analista de Impuestos.",
+        "Se actualiza solo cada día desde JHR Wise y recalcula las fechas internas de gestión cada madrugada.",
+        "Un dashboard de cumplimiento muestra qué vence, qué está gestionado y qué está pendiente."
+      ],
+      errores: [
+        "Elimina la transcripción manual de fechas desde JHR Wise y desde los PDF de cada municipio.",
+        "Las fechas internas se calculan en días hábiles de forma automática, sin errores de conteo a mano.",
+        "La vigilancia normativa de cada lunes alerta cambios que a mano podrían pasar desapercibidos.",
+        "Las diferencias entre fuentes quedan marcadas para revisión (114 vencimientos) en lugar de pasar inadvertidas.",
+        "Reduce el riesgo de declarar o pagar fuera de plazo, con sus sanciones e intereses por extemporaneidad."
+      ]
+    },
+    "b162": {
+      admin: [
+        "Los cuatro entregables (Semáforo, Evolución de Operaciones, Hoja de Ruta de Ahorro y Distribución de Flota) se regeneran con un doble clic al descargar el informe de Power BI.",
+        "Ya no se arman informes de costos a mano cada mes: el comando detecta solo el mes cerrado y guarda copia de la versión anterior.",
+        "La Dirección y la Junta reciben costos y rentabilidad por operación con la misma metodología cada mes.",
+        "Deja priorizadas 21 iniciativas de ahorro con impacto en EBITDA, listas para decidir."
+      ],
+      errores: [
+        "Verificación automática en cada corrida: lo asignado cuadra con el total del modelo mes a mes y los tableros coinciden entre sí.",
+        "Detectó un error del informe de Power BI que clasificaba como NACIONAL los viajes de WFS; el tablero lo corrige por cliente y ruta.",
+        "Una sola regla de asignación de costos (placa, centro de costo, unidad de negocio), sin duplicados.",
+        "Los ajustes manuales de facturación quedan registrados en un archivo y se avisan mientras sigan vigentes, para no olvidarlos."
+      ]
+    },
+    "b185": {
+      admin: [
+        "El proceso de Tesorería queda documentado actividad por actividad: qué se hace, con qué sistema, cada cuánto y quién lo hace.",
+        "Procedimientos del cargo de Analista de Tesorería y de la gestión de Tesorería, con sus diagramas.",
+        "Facilita la inducción y el reemplazo en vacaciones o rotación, sin depender de una sola persona.",
+        "Sirve de base para identificar automatizaciones del área (por ejemplo, la legalización de anticipos y gastos de viaje)."
+      ],
+      errores: [
+        "Hace visibles reglas que hoy no están escritas (por ejemplo, qué porcentaje de un anticipo se entrega o cuándo recargar peajes) para formalizarlas.",
+        "Deja claros los puntos de control: aprobación de fondos, conciliaciones de bancos, tarjeta de crédito y cuentas por pagar.",
+        "Define la evidencia que debe quedar de cada actividad, lo que reduce omisiones y facilita la revisión."
+      ]
+    }
+  };
+  function renderBeneficiosCualitativos(finalizadas) {
+    var wrap = document.getElementById("beneficios-cualitativos");
+    if (!wrap) return;
+    function lista(items) {
+      return '<ul style="padding-left:18px; display:flex; flex-direction:column; gap:4px">' + items.map(function (t) {
+        return '<li style="font-size:13px;color:var(--ink-muted)">' + t + '</li>';
+      }).join("") + '</ul>';
+    }
+    var html = "";
+    finalizadas.forEach(function (it) {
+      var b = BENEFICIOS_CUALI[it.backlog ? "b" + it.backlog.id : it.id];
+      if (!b) return;
+      html += '<div class="card">' +
+        '<div class="card-title">' + it.nombre + '</div>' +
+        '<p style="font-size:12.5px; color:var(--ink-faint); margin-top:2px">' + (it.area || "") + '</p>' +
+        '<p style="font-size:13px; font-weight:600; color:var(--ink); margin-top:12px">Beneficios administrativos</p>' + lista(b.admin) +
+        '<p style="font-size:13px; font-weight:600; color:var(--ink); margin-top:12px">Prevención de errores humanos</p>' + lista(b.errores) +
+        '</div>';
+    });
+    wrap.innerHTML = html || '<div class="panel-empty">Ninguna iniciativa finalizada tiene registrados sus beneficios cualitativos todavía.</div>';
+  }
+
   var CHECKLIST = [
     { n: 1, t: "Marco general definido", s: "ok", note: "Identidad, alcance y metodología de CIRO" },
     { n: 2, t: "Tres ejes definidos", s: "ok", note: "Información, Procesos y Dinámica" },
@@ -2636,6 +2740,7 @@
         }
       }
 
+      renderBeneficiosCualitativos(finalizadas);
       renderIndicadores();
 
       tbody.querySelectorAll("[data-edit]").forEach(function (btn) {
