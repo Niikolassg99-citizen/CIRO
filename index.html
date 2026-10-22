@@ -432,6 +432,7 @@
         de Tanques S.A.S. — gobierno, normativa, evaluación económica y seguimiento de iniciativas en un
         solo lugar.
       </p>
+      <p class="brand-desc" style="margin-top:6px; font-size:12.5px"><b>Información actualizada al 22 de octubre de 2026.</b></p>
     </div>
   </header>
 
@@ -503,7 +504,7 @@
         <div class="section-label">Portafolio</div>
         <div class="stat-grid">
           <div class="stat-tile"><div class="stat-num">148</div><div class="stat-label">Iniciativas identificadas</div></div>
-          <div class="stat-tile"><div class="stat-num">161</div><div class="stat-label">Iniciativas calificadas</div></div>
+          <div class="stat-tile"><div class="stat-num">185</div><div class="stat-label">Iniciativas calificadas</div></div>
           <div class="stat-tile"><div class="stat-num">16</div><div class="stat-label">Candidatos sin ambigüedad en los primeros cupos</div></div>
           <div class="stat-tile"><div class="stat-num">4</div><div class="stat-label">Cupos sujetos a decisión del Gobierno CIRO</div></div>
         </div>
@@ -577,6 +578,23 @@
             </div>
             <div class="form-actions" style="margin-top:14px">
               <button type="button" class="btn-primary" onclick="window.ciroVerFicha('estandarizacion-documental-sgi')">Ver iniciativa</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Calendario Tributario Municipal y Nacional — n8n</div>
+            <p style="font-size:13px; color:var(--ink-muted); margin-top:2px"><b style="color:var(--ink)">Área:</b> Contabilidad
+              &nbsp;·&nbsp; <b style="color:var(--ink)">Tecnología:</b> n8n + JHR Wise</p>
+            <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.65; margin-top:10px">Arma, calcula y
+              sigue en un solo sistema el calendario tributario de 95 municipios y la DIAN: trae las fechas de JHR
+              Wise cada día, calcula las fechas internas en días hábiles y avisa los cambios normativos.</p>
+            <div class="stat-grid" style="margin-top:14px">
+              <div class="stat-tile"><div class="stat-num">1.901</div><div class="stat-label">Vencimientos 2026</div></div>
+              <div class="stat-tile"><div class="stat-num">670h → 115h</div><div class="stat-label">Tiempo por año (estimado)</div></div>
+              <div class="stat-tile"><div class="stat-num">≈83%</div><div class="stat-label">Reducción de tiempo</div></div>
+              <div class="stat-tile"><div class="stat-num">555h</div><div class="stat-label">Capacidad liberada / año</div></div>
+            </div>
+            <div class="form-actions" style="margin-top:14px">
+              <button type="button" class="btn-primary" onclick="window.ciroVerFicha('calendario-tributario')">Ver iniciativa</button>
             </div>
           </div>
         </div>
@@ -997,7 +1015,7 @@
         <div class="grid-3">
           <div class="card">
             <div class="card-title">Inventario general</div>
-            <p>Todas las iniciativas identificadas en CT, sin importar su prioridad — 161 en total,
+            <p>Todas las iniciativas identificadas en CT, sin importar su prioridad — 185 en total,
               calificadas sin excepción.
               <span style="display:block; margin-top:6px" class="badge badge--ok">Completo</span></p>
           </div>
@@ -1069,7 +1087,7 @@
               <div id="indicadores-estado"></div>
             </div>
             <div class="card">
-              <div class="card-title">Backlog por clasificación (161 candidatos)</div>
+              <div class="card-title">Backlog por clasificación (185 candidatos)</div>
               <div id="indicadores-backlog"></div>
             </div>
           </div>
@@ -1088,7 +1106,7 @@
         </div>
 
         <div class="section">
-          <div class="section-label">Semáforo de riesgo de datos — backlog (161 candidatos)</div>
+          <div class="section-label">Semáforo de riesgo de datos — backlog (185 candidatos)</div>
           <div class="stat-grid" id="indicadores-semaforo"></div>
         </div>
       </div>
@@ -1274,9 +1292,9 @@
 
       <div data-subpanel="portafolio">
         <div class="section">
-          <div class="section-label">Backlog — 161 candidatos calificados</div>
-          <p class="view-intro" style="margin-top:0">Inventario completo de CIRO: 161 iniciativas identificadas
-            y calificadas sin excepción — 148 del relevamiento general de la organización más 13 incorporadas
+          <div class="section-label">Backlog — 185 candidatos calificados</div>
+          <p class="view-intro" style="margin-top:0">Inventario completo de CIRO: 185 iniciativas identificadas
+            y calificadas sin excepción — 148 del relevamiento general de la organización más 37 incorporadas
             directamente por el Gobierno CIRO. Calificación cualitativa de punto de partida — el Gobierno CIRO
             debe validarla.</p>
         </div>
@@ -1299,6 +1317,15 @@
                 <button class="filter-chip" data-filter="Alta" aria-pressed="true">Alta</button>
                 <button class="filter-chip" data-filter="Backlog" aria-pressed="true">Backlog</button>
                 <button class="filter-chip" id="backlog-top20-toggle" aria-pressed="true">Solo Top 20</button>
+                <select class="search-input" id="backlog-estado" style="flex:0 0 auto; min-width:0; width:auto" aria-label="Filtrar por estado">
+                  <option value="">Todos los estados</option>
+                  <option value="avance">Con avance (evaluación, ejecución o finalizada)</option>
+                  <option value="Propuesta">Propuesta</option>
+                  <option value="En evaluación">En evaluación</option>
+                  <option value="Aprobada">Aprobada</option>
+                  <option value="En ejecución">En ejecución</option>
+                  <option value="Finalizada">Finalizada</option>
+                </select>
                 <span class="filter-count" id="backlog-count"></span>
               </div>
               <div class="table-wrap">
@@ -1313,6 +1340,7 @@
                       <th class="num sortable" data-key="efic">Efic.<span class="arrow">▾</span></th>
                       <th class="sortable is-active" data-key="pct">Score<span class="arrow">▾</span></th>
                       <th>Clasificación</th>
+                      <th>Estado</th>
                     </tr>
                   </thead>
                   <tbody id="backlog-tbody"></tbody>
@@ -1322,7 +1350,8 @@
                 empatadas exactamente en el puntaje de corte del cupo 20 — desempate pendiente del Gobierno CIRO
                 (urgencia, capacidad, dependencias). "Solo Top 20" muestra el portafolio visible; "Ver todas" muestra
                 el inventario general completo, calificado sin excepción. Áreas con «·» son inferidas por el
-                analista, a confirmar.</p>
+                analista, a confirmar. Al filtrar por estado se muestran todas las iniciativas con ese estado,
+                estén o no en el Top 20; pase el cursor sobre el estado para ver el detalle del avance.</p>
               <div class="note" style="margin-top:14px">Calificación cualitativa inicial (Legal/Financiero/Eficiencia,
                 1-5 cada una) — el Gobierno CIRO debe validarla antes de usarla en decisiones de alto impacto.</div>
             </div>
@@ -1549,6 +1578,7 @@
             <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">16 de septiembre de 2026</div><div class="chain-desc">Área líder de la Automatización Consulta SIMIT confirmada como Jurídica.</div></div></div>
             <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">17 de septiembre de 2026</div><div class="chain-desc">Costo-hora cargado oficial confirmado; inventario general de 160 iniciativas calificado sin excepción.</div></div></div>
             <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">18 de septiembre de 2026</div><div class="chain-desc">Iniciativa Estandarización Documental SGI registrada e incorporada al backlog (fila 161, Gestión de Calidad) — automatización real en n8n, en producción desde junio de 2026, con ficha técnica y económica completa.</div></div></div>
+            <div class="chain-level"><div class="chain-connector"><span class="chain-dot"></span></div><div class="chain-body"><div class="chain-name">21 de octubre de 2026</div><div class="chain-desc">Estado de avance registrado en cada iniciativa (Propuesta, En evaluación, Aprobada, En ejecución, Finalizada). Se incorporan 24 iniciativas (filas 162-185): el Tablero de Costos Operativos y sus 21 iniciativas de impacto EBITDA, la app de legalización de gastos de viaje para conductores y el levantamiento del cargo Analista de Tesorería. SIMIT y Estandarización SGI pasan a «Finalizada» y siguen generando valor mensual.</div></div></div>
           </div>
         </div>
       </div>
@@ -1561,6 +1591,7 @@
     <div class="footer-inner">
       <img class="footer-logo" src="logo-coorditanques-footer.webp" alt="Coorditanques — Soluciones Logísticas">
       <span>Cada iniciativa puede utilizar Power BI, n8n y SharePoint según su necesidad de tablero, automatización o documentación.</span>
+      <span>Última actualización: <b>22 de octubre de 2026</b></span>
     </div>
   </footer>
 
@@ -1570,26 +1601,26 @@
 (function () {
   "use strict";
 
-  /* ---------------- Datos del backlog (161 candidatos calificados: 24 + 137 del inventario Excel) ---------------- */
+  /* ---------------- Datos del backlog (185 candidatos calificados: 24 + 137 del inventario Excel + 24 de la séptima ronda) ---------------- */
   /* Score ponderado = legal*0.5 + fin*0.3 + efic*0.2, sobre 5. Fuente: 03-fase-estructura.md §3.5.1 */
   var BACKLOG = [
-    { id: 1,  nombre: "Proyecto Torre de Control (incl. integración GPS)", area: "Logística / Torre de Control / Seguridad Física / Facturación", legal: 5, fin: 5, efic: 5 },
+    { id: 1,  nombre: "Proyecto Torre de Control (incl. integración GPS)", area: "Logística / Torre de Control / Seguridad Física / Facturación", legal: 5, fin: 5, efic: 5, estado: "En ejecución", nota: "Avanza con la app CIRO-TC (recomendador) y el comparador de proveedores GPS (Satrack vs. ControlT)" },
     { id: 2,  nombre: "Lavado de tanques — compatibilidad de productos", area: "Mantenimiento / Logística / Operaciones / SST / Ambiental", legal: 5, fin: 5, efic: 4 },
     { id: 3,  nombre: "Automatización de tanqueos y control de documentación vehicular", area: "Seguridad Física / Mantenimiento / Logística", legal: 5, fin: 4, efic: 4 },
     { id: 4,  nombre: "Automatización del control de horas laboradas por conductor", area: "Seguridad Física / GH / Logística", legal: 5, fin: 3, efic: 4 },
     { id: 5,  nombre: "Preoperación Vehicular", area: "Mantenimiento / Logística / Torre de Control", legal: 5, fin: 3, efic: 4 },
-    { id: 6,  nombre: "Calendario Tributario Municipal y Nacional", area: "Contabilidad", legal: 5, fin: 3, efic: 3 },
-    { id: 7,  nombre: "Decantación Operación Logística (El Dorado)", area: "Logística / Operaciones", areaInferida: true, legal: 3, fin: 5, efic: 4 },
-    { id: 8,  nombre: "Recomendador logístico (programador logístico)", area: "Logística / Mantenimiento / Torre de Control / GH / Jurídica", legal: 3, fin: 4, efic: 5 },
-    { id: 9,  nombre: "Automatización Consulta conductores activos SIMIT", area: "Jurídica", legal: 4, fin: 3, efic: 4, ficha: true, fichaId: "simit-consulta" },
+    { id: 6,  nombre: "Calendario Tributario Municipal y Nacional", area: "Contabilidad", legal: 5, fin: 3, efic: 3, ficha: true, fichaId: "calendario-tributario", estado: "Finalizada", avance: 100, recurrente: true, nota: "Entregada el 22-oct-2026: 95 municipios + DIAN, 1.901 vencimientos, actualización diaria desde JHR Wise, dashboard y vigilancia normativa. Pasa de ~670 h/año a 60-115 h/año; beneficio contado desde nov-2026" },
+    { id: 7,  nombre: "Decantación Operación Logística (El Dorado)", area: "Logística / Operaciones", areaInferida: true, legal: 3, fin: 5, efic: 4, estado: "En ejecución", avance: 90, nota: "Causa raíz y plan de acción documentados (21-sep-2026); falta la verificación en campo" },
+    { id: 8,  nombre: "Recomendador logístico (programador logístico)", area: "Logística / Mantenimiento / Torre de Control / GH / Jurídica", legal: 3, fin: 4, efic: 5, estado: "En ejecución", avance: 70, nota: "App CIRO-TC: base de datos, solicitudes, recursos y compatibilidad química construidos" },
+    { id: 9,  nombre: "Automatización Consulta conductores activos SIMIT", area: "Jurídica", legal: 4, fin: 3, efic: 4, ficha: true, fichaId: "simit-consulta", estado: "Finalizada", recurrente: true, nota: "Implementada en UiPath; cada mes genera valor económico para CIRO" },
     { id: 10, nombre: "Mejora de conciliación vs. RADIAN", area: "Contabilidad", legal: 4, fin: 3, efic: 3 },
-    { id: 11, nombre: "Validaciones de normatividad — JHR Wise vs. normativa municipal", area: "Contabilidad", areaInferida: true, legal: 4, fin: 3, efic: 3 },
+    { id: 11, nombre: "Validaciones de normatividad — JHR Wise vs. normativa municipal", area: "Contabilidad", areaInferida: true, legal: 4, fin: 3, efic: 3, estado: "En evaluación", nota: "Investigación de la plataforma JHR Wise y de su API interna (país Contabilidad)" },
     { id: 12, nombre: "Automatización de ingresos por municipio", area: "Contabilidad", legal: 3, fin: 4, efic: 3 },
     { id: 13, nombre: "Generación de balances para Revisoría", area: "Contabilidad", legal: 4, fin: 2, efic: 3 },
     { id: 14, nombre: "Optimización trazabilidad de faltantes", area: "Seguridad Física / Servicio al Cliente / Operaciones", legal: 2, fin: 4, efic: 4 },
     { id: 15, nombre: "Automatización de causaciones", area: "Contabilidad", legal: 2, fin: 4, efic: 4 },
     { id: 16, nombre: "Informe de incapacidades (BUK)", area: "Contabilidad / Gestión Humana", legal: 3, fin: 3, efic: 3 },
-    { id: 17, nombre: "Liquidación de comisiones de mano de obra (técnicos y mecánicos)", area: "Mantenimiento", legal: 2, fin: 4, efic: 4 },
+    { id: 17, nombre: "Liquidación de comisiones de mano de obra (técnicos y mecánicos)", area: "Mantenimiento", legal: 2, fin: 4, efic: 4, estado: "En ejecución", avance: 60, nota: "5 workflows n8n construidos (tempario, carga, validación, técnicos, cierre); falta alimentarlos desde el .pbix" },
     { id: 18, nombre: "Control de disponibilidad vehicular para mantenimiento", area: "Logística / Mantenimiento", legal: 2, fin: 3, efic: 4 },
     { id: 19, nombre: "Automatización y sistematización del inventario de mantenimiento", area: "Mantenimiento", legal: 1, fin: 4, efic: 4 },
     { id: 20, nombre: "Optimización de conciliaciones bancarias (fecha y valor)", area: "Contabilidad", legal: 1, fin: 4, efic: 4 },
@@ -1737,7 +1768,34 @@
     { id: 158, nombre: "Optimización de citaciones a capacitaciones", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
     { id: 159, nombre: "Alineación con líderes para mejorar comunicación y flujo de información", area: "Formación", legal: 3, fin: 3, efic: 5, inventario148: true },
     { id: 160, nombre: "Integración del área de Formación en todas las áreas de la empresa", area: "Formación", legal: 2, fin: 2, efic: 2, inventario148: true },
-    { id: 161, nombre: "Estandarización Documental SGI", area: "Gestión de Calidad", legal: 4, fin: 3, efic: 5, ficha: true, fichaId: "estandarizacion-documental-sgi" }
+    { id: 161, nombre: "Estandarización Documental SGI", area: "Gestión de Calidad", legal: 4, fin: 3, efic: 5, ficha: true, fichaId: "estandarizacion-documental-sgi", estado: "Finalizada", recurrente: true, nota: "Dos workflows n8n en producción desde junio de 2026; cada mes genera valor económico para CIRO" },
+    /* -------- Séptima ronda (21-oct-2026): país Tablero_Costos (tablero + 21 iniciativas de impacto EBITDA de la
+       Hoja de Ruta de Ahorro), app de Gastos de Viaje y levantamiento de Tesorería. Calificación cualitativa del
+       analista, igual que las anteriores — el PMO debe validarla. */
+    { id: 162, nombre: "Tablero de Costos Operativos (Semáforo, Evolución, Hoja de Ruta y Distribución de Flota)", area: "Dirección Estratégica / Financiera", legal: 2, fin: 5, efic: 4, estado: "Finalizada", avance: 100, origen: "Tablero de Costos", nota: "Entregables vivos que se regeneran cada mes con el .pbix" },
+    { id: 163, nombre: "Conductor a la medida del km — planta y pago de conductores según los km", area: "Gestión Humana / Operaciones", legal: 2, fin: 5, efic: 4, origen: "Tablero de Costos" },
+    { id: 164, nombre: "Taller a precio de mercado — cotizar mantenimiento y decidir reparar o reponer", area: "Compras / Mantenimiento / Gerencia", legal: 1, fin: 5, efic: 3, origen: "Tablero de Costos" },
+    { id: 165, nombre: "Flota a la medida — redimensionar las flotas de JET Bogotá y Messer", area: "Operaciones / Dirección", legal: 1, fin: 5, efic: 4, origen: "Tablero de Costos" },
+    { id: 166, nombre: "Patio bajo la lupa — validar el flete en patio", area: "Operaciones / Contabilidad", legal: 1, fin: 3, efic: 3, origen: "Tablero de Costos" },
+    { id: 167, nombre: "Cada galón cuenta — combustible por volumen y rendimiento por placa", area: "Compras / Operaciones", legal: 1, fin: 5, efic: 4, origen: "Tablero de Costos" },
+    { id: 168, nombre: "Pólizas a licitación — licitar los seguros de la flota", area: "Gerencia Financiera", legal: 2, fin: 3, efic: 2, origen: "Tablero de Costos" },
+    { id: 169, nombre: "Lavadas bajo control — revisar el gasto en lavadas", area: "Mantenimiento / Contabilidad", legal: 1, fin: 3, efic: 3, origen: "Tablero de Costos" },
+    { id: 170, nombre: "Viático con tabla — tabla fija de viáticos y control de taxis", area: "Operaciones / Gestión Humana", legal: 2, fin: 3, efic: 4, origen: "Tablero de Costos" },
+    { id: 171, nombre: "Bono que premia el margen — participación ligada al margen real", area: "Gestión Humana / Gerencia", legal: 2, fin: 4, efic: 3, origen: "Tablero de Costos" },
+    { id: 172, nombre: "Llanta que rinde — programa de control de llantas por placa", area: "Mantenimiento / Compras", legal: 2, fin: 3, efic: 4, origen: "Tablero de Costos" },
+    { id: 173, nombre: "Peaje que se traslada — peajes en contrato y rutas alternas", area: "Comercial / Operaciones", legal: 1, fin: 4, efic: 2, origen: "Tablero de Costos" },
+    { id: 174, nombre: "Tarifa que se ajusta sola — cláusulas de ajuste automático de tarifa", area: "Comercial / Dirección / Jurídica", legal: 2, fin: 5, efic: 2, origen: "Tablero de Costos" },
+    { id: 175, nombre: "Copiar al que mejora — replicar la operación que más mejoró su margen", area: "Comercial / Operaciones", legal: 1, fin: 4, efic: 3, origen: "Tablero de Costos" },
+    { id: 176, nombre: "Regreso con carga — reducir los km vacíos", area: "Operaciones / Comercial", legal: 1, fin: 5, efic: 5, origen: "Tablero de Costos" },
+    { id: 177, nombre: "Renovar a tiempo — política de renovación por costo total", area: "Gerencia / Mantenimiento / Financiera", legal: 2, fin: 4, efic: 3, origen: "Tablero de Costos" },
+    { id: 178, nombre: "Ni un vehículo quieto — decidir sobre los vehículos que cuestan sin rodar", area: "Operaciones / Gerencia", legal: 1, fin: 4, efic: 4, origen: "Tablero de Costos" },
+    { id: 179, nombre: "Propio frente a tercero — comparar flota propia y terceros por ruta", area: "Operaciones / Comercial / Contabilidad", legal: 1, fin: 4, efic: 3, origen: "Tablero de Costos" },
+    { id: 180, nombre: "Cobrar antes, pagar menos — reducir el factoring acelerando el recaudo", area: "Cartera / Gerencia Financiera", legal: 1, fin: 5, efic: 3, origen: "Tablero de Costos" },
+    { id: 181, nombre: "Deuda más barata — refinanciar o consolidar créditos", area: "Gerencia Financiera", legal: 1, fin: 4, efic: 2, origen: "Tablero de Costos" },
+    { id: 182, nombre: "Gastos de socios a la vista — partida aparte con presupuesto de Junta", area: "Gerencia / Junta Directiva", legal: 3, fin: 3, efic: 2, origen: "Tablero de Costos" },
+    { id: 183, nombre: "Conductores que se quedan — medir y reducir la rotación de conductores", area: "Gestión Humana", legal: 2, fin: 3, efic: 3, origen: "Tablero de Costos" },
+    { id: 184, nombre: "App de legalización de gastos de viaje para conductores", area: "Financiera / Nómina", legal: 4, fin: 4, efic: 5, estado: "En ejecución", avance: 50, nota: "Prototipo listo; esperando de TI las vistas de SITRAC para cargar datos reales. Alimenta a Nómina con el saldo de cada conductor" },
+    { id: 185, nombre: "Levantamiento de la gestión de Tesorería y de los cargos Analista y Coordinadora de Tesorería", area: "Tesorería", legal: 3, fin: 2, efic: 4, estado: "Finalizada", avance: 100, nota: "Levantamiento del proceso y de los cargos, diagramas y procedimientos entregados" }
   ];
 
   BACKLOG.forEach(function (r) {
@@ -1747,9 +1805,18 @@
     r.clase = r.pct >= 80 ? "Crítica" : r.pct >= 60 ? "Alta" : r.pct >= 40 ? "Backlog" : "No priorizada";
     r.rankVar = r.clase === "Crítica" ? "--rank-critica" : r.clase === "Alta" ? "--rank-alta" : r.clase === "Backlog" ? "--rank-backlog" : "--rank-none";
     r.badgeClass = r.clase === "Crítica" ? "badge--critica" : r.clase === "Alta" ? "badge--alta" : r.clase === "Backlog" ? "badge--backlog" : "badge--none";
+    r.estado = r.estado || "Propuesta";
   });
 
-  /* ---------------- Top 20 y empates — calculado en vivo, ya no a mano (161 candidatos) ---------------- */
+  /* ---------------- Estado de cada iniciativa (Propuesta → En evaluación → Aprobada → En ejecución → Finalizada) ---------------- */
+  var ESTADOS = ["Propuesta", "En evaluación", "Aprobada", "En ejecución", "Finalizada"];
+  function estadoBadge(r) {
+    var cls = r.estado === "Finalizada" || r.estado === "Aprobada" ? "badge--ok" : r.estado === "En ejecución" ? "badge--warn" : r.estado === "En evaluación" ? "badge--backlog" : "badge--pending";
+    var txt = r.estado + (r.avance != null ? " · " + r.avance + "%" : "") + (r.recurrente ? " · valor mensual" : "");
+    return '<span class="badge ' + cls + '"' + (r.nota ? ' title="' + r.nota.replace(/"/g, "&quot;") + '"' : '') + '>' + txt + '</span>';
+  }
+
+  /* ---------------- Top 20 y empates — calculado en vivo, ya no a mano (185 candidatos) ---------------- */
   (function () {
     var ranked = BACKLOG.slice().sort(function (a, b) { return b.pct - a.pct; });
     var boundaryPct = ranked.length > 20 ? ranked[19].pct : null;
@@ -1851,38 +1918,107 @@
     return { costoHoraCargado: costoHoraCargado, evaluar: evaluar, npv: npv, irr: irr };
   })();
 
+  /* Costos de plataforma compartidos por todas las iniciativas (OPEX recurrente, no CAPEX; dato del usuario 22-oct-2026).
+     No se reparten por iniciativa: se descuentan una sola vez del beneficio total del portafolio. */
+  var COSTOS_PLATAFORMA = [
+    { nombre: "Anthropic (Claude)", mensual: 80000 },
+    { nombre: "Hostinger (hosting)", mensual: 80000 }
+  ];
+  var costoPlataformaMensual = COSTOS_PLATAFORMA.reduce(function (a, c) { return a + c.mensual; }, 0);
+  function plataformaDetalle() {
+    return COSTOS_PLATAFORMA.map(function (c) { return c.nombre + " " + fmtCOP(c.mensual); }).join(" + ") + " al mes";
+  }
+
   var ECON_KEY = "ciro-econ-iniciativas";
+  /* Ejecuciones que se suman solas cada mes (acuerdo con el usuario): base = conteo confirmado al mes baseMes
+     ([año, mes 0-11]); el día 1 de cada mes siguiente se agregan porMes. Nunca baja un conteo ya guardado mayor. */
+  var EJEC_AUTO = {
+    "simit-consulta": { base: 5, baseMes: [2026, 8], porMes: 1 },                    /* may–sep 2026, +1 al mes */
+    "estandarizacion-documental-sgi": { base: 255, baseMes: [2026, 8], porMes: 64 }, /* jun–sep 2026, +64 docs al mes (promedio 255 ÷ 4) */
+    "calendario-tributario": { base: 0, baseMes: [2026, 9], porMes: 1 }              /* cuenta desde nov 2026, +1 al mes */
+  };
+  /* Calendario Tributario (n8n, entregado 22-oct-2026). Tiempos: PRO-FIN-APLICACION_CALENDARIO_TRIBUTARIO-V01-2026.docx
+     (Mundos/N8N/continentes/Automatizacion-Calendario-ICA): ~670 h/año antes → 60 a 115 h/año con el sistema (se usa 115,
+     escenario conservador). Se registra como una ejecución mensual. */
+  var SEED_CALENDARIO = {
+    id: "calendario-tributario",
+    nombre: "Calendario Tributario Municipal y Nacional",
+    area: "Contabilidad", lider: "", responsable: "Analista de Impuestos",
+    estado: "Finalizada", categoria: "Automatización con n8n",
+    descripcion: "Calendario tributario 2026 (95 municipios + DIAN) armado, calculado y seguido en n8n: extracción diaria desde JHR Wise, fechas internas de gestión en días hábiles, dashboard de cumplimiento y vigilancia normativa. Reemplaza ~4 meses/año de trabajo manual.",
+    frecuencia: 12, tiempoActual: 670 / 12, tiempoFuturo: 115 / 12, volumen: 1901, personas: 1,
+    salario: 4100000, factorPrestacional: 25, auxilio: 0, horasMensuales: 168,
+    otrosCostosActualMensual: 0, opexIncrementalMensual: 0, ejecucionesRealizadas: null, ahorroEfectivo: null,
+    requiereCapex: false, inversionInicial: null, horizonte: null, tasaDescuento: null
+  };
+  function ejecucionesAuto(id) {
+    var c = EJEC_AUTO[id];
+    if (!c) return null;
+    var hoy = new Date();
+    var meses = (hoy.getFullYear() - c.baseMes[0]) * 12 + hoy.getMonth() - c.baseMes[1];
+    return c.base + Math.max(0, meses) * c.porMes;
+  }
   function loadIniciativasEcon() {
-    try { return JSON.parse(localStorage.getItem(ECON_KEY)) || []; } catch (e) { return []; }
+    var list;
+    try { list = JSON.parse(localStorage.getItem(ECON_KEY)) || []; } catch (e) { list = []; }
+    list.forEach(function (it) {
+      var auto = ejecucionesAuto(it.id);
+      if (auto != null && !(Number(it.ejecucionesRealizadas) > auto)) it.ejecucionesRealizadas = auto;
+    });
+    return list;
   }
   function saveIniciativasEcon(list) {
     try { localStorage.setItem(ECON_KEY, JSON.stringify(list)); } catch (e) {}
   }
   function seedSimitSiVacio() {
     var list = loadIniciativasEcon();
+    /* 21-oct-2026: SIMIT y SGI pasan a «Finalizada» (siguen generando valor cada mes) — corrige registros ya guardados */
+    try {
+      if (list.length && !localStorage.getItem("ciro-econ-migr-2026-10-21")) {
+        list.forEach(function (it) {
+          if ((it.id === "simit-consulta" || it.id === "estandarizacion-documental-sgi") && it.estado === "En ejecución") it.estado = "Finalizada";
+        });
+        saveIniciativasEcon(list);
+        localStorage.setItem("ciro-econ-migr-2026-10-21", "1");
+      }
+      /* 22-oct-2026: agrega el caso económico del Calendario Tributario a los registros ya guardados (una sola vez) */
+      if (list.length && !localStorage.getItem("ciro-econ-seed-calendario")) {
+        if (!list.some(function (it) { return it.id === SEED_CALENDARIO.id; })) {
+          var cal = JSON.parse(JSON.stringify(SEED_CALENDARIO));
+          cal.ejecucionesRealizadas = ejecucionesAuto(cal.id);
+          list.push(cal);
+          saveIniciativasEcon(list);
+        }
+        localStorage.setItem("ciro-econ-seed-calendario", "1");
+      }
+    } catch (e) {}
     if (list.length) return list;
     list = [{
       id: "simit-consulta",
       nombre: "Automatización Consulta conductores activos SIMIT",
       area: "Jurídica", lider: "", responsable: "Auxiliar Administrativo",
-      estado: "En ejecución", categoria: "Automatización RPA (UiPath)",
+      estado: "Finalizada", categoria: "Automatización RPA (UiPath)",
       descripcion: "Verificación mensual del estado de cuenta SIMIT de conductores activos antes de asignarlos a un viaje.",
       frecuencia: 12, tiempoActual: 11, tiempoFuturo: 40 / 60, volumen: 210, personas: 1,
       salario: 1750905, factorPrestacional: 25, auxilio: 249095, horasMensuales: 168,
-      otrosCostosActualMensual: 0, opexIncrementalMensual: 0, ejecucionesRealizadas: 5, ahorroEfectivo: null,
+      otrosCostosActualMensual: 0, opexIncrementalMensual: 0, ejecucionesRealizadas: ejecucionesAuto("simit-consulta"), ahorroEfectivo: null,
       requiereCapex: false, inversionInicial: null, horizonte: null, tasaDescuento: null
     }, {
       id: "estandarizacion-documental-sgi",
       nombre: "Estandarización Documental SGI",
       area: "Gestión de Calidad", lider: "", responsable: "Coordinadora de SGI",
-      estado: "En ejecución", categoria: "Automatización con n8n",
+      estado: "Finalizada", categoria: "Automatización con n8n",
       descripcion: "Estandarización automática de documentos del SGI (formato, código, versión, nomenclatura) mediante dos workflows n8n — formulario manual y carga masiva por Excel — en reemplazo de la edición manual y de un flujo previo soportado por UiPath.",
-      frecuencia: 255, tiempoActual: 2.5 / 60, tiempoFuturo: 42.98 / 3600, volumen: 255, personas: 1,
+      frecuencia: 64 * 12, tiempoActual: 2.5 / 60, tiempoFuturo: 42.98 / 3600, volumen: 64, personas: 1,
       salario: 3500000, factorPrestacional: 25, auxilio: 0, horasMensuales: 168,
-      otrosCostosActualMensual: 0, opexIncrementalMensual: 0, ejecucionesRealizadas: 255, ahorroEfectivo: null,
+      otrosCostosActualMensual: 0, opexIncrementalMensual: 0, ejecucionesRealizadas: ejecucionesAuto("estandarizacion-documental-sgi"), ahorroEfectivo: null,
       requiereCapex: false, inversionInicial: null, horizonte: null, tasaDescuento: null
     }];
+    var cal = JSON.parse(JSON.stringify(SEED_CALENDARIO));
+    cal.ejecucionesRealizadas = ejecucionesAuto(cal.id);
+    list.push(cal);
     saveIniciativasEcon(list);
+    try { localStorage.setItem("ciro-econ-seed-calendario", "1"); } catch (e) {}
     return list;
   }
   seedSimitSiVacio();
@@ -1894,9 +2030,9 @@
     { n: 4, t: "Gobierno CIRO definido", s: "ok", note: "Cadena de gobierno y niveles de decisión" },
     { n: 5, t: "PMO definido", s: "ok", note: "Rol, alcance y ritmo de gobierno" },
     { n: 6, t: "Metodología de priorización documentada", s: "ok", note: "Criterios, pesos y escala de clasificación" },
-    { n: 7, t: "Inventario general de iniciativas", s: "ok", note: "161 iniciativas calificadas sin excepción" },
+    { n: 7, t: "Inventario general de iniciativas", s: "ok", note: "185 iniciativas calificadas sin excepción, con estado" },
     { n: 8, t: "Backlog de reserva", s: "ok", note: "6 iniciativas conservadas, no eliminadas" },
-    { n: 9, t: "Top 20 de iniciativas visibles", s: "warn", note: "161 candidatos calificados para 20 cupos — empate en el puntaje de corte entre varias iniciativas" },
+    { n: 9, t: "Top 20 de iniciativas visibles", s: "warn", note: "185 candidatos calificados para 20 cupos — empate en el puntaje de corte entre varias iniciativas" },
     { n: 10, t: "Modelo económico", s: "ok", note: "Enfoque proporcional sin umbral fijo" },
     { n: 11, t: "Flujo de solicitudes", s: "ok", note: "Registro y cuantificación de nuevas iniciativas" },
     { n: 12, t: "Fuente maestra", s: "warn", note: "Esquema de campos definido; consolidación en repositorio único en actualización" },
@@ -1993,12 +2129,15 @@
     '<div class="stat-tile"><div class="stat-num" style="color:var(--rank-critica)">' + counts["Crítica"] + '</div><div class="stat-label">Crítica (≥ 80%)</div></div>' +
     '<div class="stat-tile"><div class="stat-num" style="color:var(--rank-alta)">' + counts["Alta"] + '</div><div class="stat-label">Alta (60–79%)</div></div>' +
     '<div class="stat-tile"><div class="stat-num" style="color:var(--rank-backlog)">' + counts["Backlog"] + '</div><div class="stat-label">Backlog (40–59%)</div></div>' +
+    '<div class="stat-tile"><div class="stat-num" style="color:var(--status-warn)">' + BACKLOG.filter(function (r) { return r.estado === "En ejecución"; }).length + '</div><div class="stat-label">En ejecución</div></div>' +
+    '<div class="stat-tile"><div class="stat-num" style="color:var(--status-ok)">' + BACKLOG.filter(function (r) { return r.estado === "Finalizada"; }).length + '</div><div class="stat-label">Finalizadas</div></div>' +
     '<div class="stat-tile is-warn"><div class="stat-num">20/' + BACKLOG.length + '</div><div class="stat-label">' + (empatadasCount ? 'Cupos del portafolio — ' + empatadasCount + ' empatadas en ' + empatePct + '%' : 'Cupos del portafolio') + '</div></div>';
 
   var sortState = { key: "pct", dir: "desc" };
   var activeFilters = { "Crítica": true, "Alta": true, "Backlog": true };
   var soloTop20 = true;
   var searchTerm = "";
+  var estadoFiltro = "";
 
   function scoreBarHtml(r) {
     return '<div class="score-cell"><div class="score-bar"><div class="score-bar-fill" style="width:' + r.pct + '%; background:var(' + r.rankVar + ')"></div></div><span class="score-pct">' + r.pct + '%</span></div>';
@@ -2007,9 +2146,11 @@
   function renderBacklog() {
     var rows = BACKLOG.filter(function (r) {
       if (r.clase !== "No priorizada" && !activeFilters[r.clase]) return false;
-      if (soloTop20 && !r.top20) return false;
+      if (estadoFiltro === "avance" && r.estado === "Propuesta") return false;
+      if (estadoFiltro && estadoFiltro !== "avance" && r.estado !== estadoFiltro) return false;
+      if (soloTop20 && !estadoFiltro && !r.top20) return false;
       if (searchTerm) {
-        var hay = (r.nombre + " " + r.area).toLowerCase();
+        var hay = (r.nombre + " " + r.area + " " + (r.origen || "")).toLowerCase();
         if (hay.indexOf(searchTerm) === -1) return false;
       }
       return true;
@@ -2038,14 +2179,20 @@
         '<td class="num">' + r.efic + '</td>' +
         '<td>' + scoreBarHtml(r) + '</td>' +
         '<td><span class="badge ' + r.badgeClass + '">' + r.clase + '</span></td>' +
+        '<td>' + estadoBadge(r) + '</td>' +
         '</tr>';
     });
-    document.getElementById("backlog-tbody").innerHTML = html || '<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--ink-faint)">Sin resultados para este filtro.</td></tr>';
+    document.getElementById("backlog-tbody").innerHTML = html || '<tr><td colspan="9" style="text-align:center; padding:24px; color:var(--ink-faint)">Sin resultados para este filtro.</td></tr>';
     document.getElementById("backlog-count").textContent = rows.length + " de " + BACKLOG.length + " iniciativas";
   }
 
   document.getElementById("backlog-search").addEventListener("input", function (e) {
     searchTerm = e.target.value.trim().toLowerCase();
+    renderBacklog();
+  });
+
+  document.getElementById("backlog-estado").addEventListener("change", function (e) {
+    estadoFiltro = e.target.value;
     renderBacklog();
   });
 
@@ -2090,7 +2237,7 @@
       '<td>' + r.nombre + '</td>' +
       '<td>' + r.area + '</td>' +
       '<td><span class="badge ' + r.badgeClass + '">' + r.pct + '% · ' + r.clase + '</span></td>' +
-      '<td>' + (r.ficha ? '<span class="badge badge--ok">En producción desde may-2026</span>' : '<span class="badge badge--pending">Pendiente</span>') + '</td>' +
+      '<td>' + estadoBadge(r) + '</td>' +
       '</tr>';
   });
   document.getElementById("panel1-tbody").innerHTML = panel1Html;
@@ -2247,12 +2394,15 @@
         if (r.ahorroEfectivo != null) countAhorroConfirmado++;
       });
       var reduccionPromedio = countReduccion ? sumaReduccion / countReduccion : null;
+      var netoMensual = totalBeneficioMensual - costoPlataformaMensual, netoAnual = totalBeneficioAnual - costoPlataformaMensual * 12;
 
       var elValor = document.getElementById("indicadores-valor");
       if (elValor) {
         elValor.innerHTML =
           '<div class="stat-tile"><div class="stat-num">' + fmtCOP(totalBeneficioMensual) + '</div><div class="stat-label">Beneficio económico total / mes</div></div>' +
           '<div class="stat-tile"><div class="stat-num">' + fmtCOP(totalBeneficioAnual) + '</div><div class="stat-label">Beneficio económico total / año</div></div>' +
+          '<div class="stat-tile is-warn"><div class="stat-num">−' + fmtCOP(costoPlataformaMensual) + '</div><div class="stat-label">Costo de plataforma compartido / mes (' + plataformaDetalle() + ')</div></div>' +
+          '<div class="stat-tile"><div class="stat-num" style="color:var(--status-ok)">' + fmtCOP(netoMensual) + '</div><div class="stat-label">Beneficio neto / mes (' + fmtCOP(netoAnual) + ' / año)</div></div>' +
           '<div class="stat-tile"><div class="stat-num">' + fmtHoras(totalHorasLiberadas) + '</div><div class="stat-label">Horas liberadas / año (todas las iniciativas)</div></div>' +
           '<div class="stat-tile"><div class="stat-num">' + (reduccionPromedio != null ? fmtPct(reduccionPromedio) : "—") + '</div><div class="stat-label">Reducción de tiempo promedio</div></div>' +
           '<div class="stat-tile"><div class="stat-num">' + countAhorroConfirmado + ' / ' + list.length + '</div><div class="stat-label">Con ahorro efectivo confirmado (el resto es capacidad liberada)</div></div>';
@@ -2264,13 +2414,15 @@
           '<div class="stat-tile"><div class="stat-num">' + list.length + '</div><div class="stat-label">Iniciativas con caso económico registrado</div></div>' +
           '<div class="stat-tile"><div class="stat-num">' + fmtCOP(totalBeneficioMensual) + '</div><div class="stat-label">Beneficio económico / mes</div></div>' +
           '<div class="stat-tile"><div class="stat-num">' + fmtCOP(totalBeneficioAnual) + '</div><div class="stat-label">Beneficio económico / año</div></div>' +
+          '<div class="stat-tile"><div class="stat-num" style="color:var(--status-ok)">' + fmtCOP(netoMensual) + '</div><div class="stat-label">Beneficio neto / mes, después de ' + fmtCOP(costoPlataformaMensual) + ' de plataforma</div></div>' +
           '<div class="stat-tile"><div class="stat-num">' + fmtHoras(totalHorasLiberadas) + '</div><div class="stat-label">Horas liberadas / año</div></div>';
       }
 
       var elEstado = document.getElementById("indicadores-estado");
       if (elEstado) {
-        var estados = { "Propuesta": 0, "En evaluación": 0, "Aprobada": 0, "En ejecución": 0, "Finalizada": 0 };
-        list.forEach(function (it) { estados[it.estado] = (estados[it.estado] || 0) + 1; });
+        var estados = {};
+        ESTADOS.forEach(function (k) { estados[k] = 0; });
+        BACKLOG.forEach(function (r) { estados[r.estado] = (estados[r.estado] || 0) + 1; });
         elEstado.innerHTML = listaHtml(Object.keys(estados).map(function (k) { return [k, estados[k]]; }));
       }
 
@@ -2283,12 +2435,12 @@
 
       var elProy = document.getElementById("indicadores-proyeccion");
       if (elProy) {
-        if (!totalBeneficioMensual) {
+        if (netoMensual <= 0) {
           elProy.innerHTML = '<div class="panel-empty">Sin datos suficientes todavía.</div>';
         } else {
-          var maxAcum = totalBeneficioMensual * 6, rowsP = "";
+          var maxAcum = netoMensual * 6, rowsP = "";
           for (var mIdx = 1; mIdx <= 6; mIdx++) {
-            var acumP = totalBeneficioMensual * mIdx;
+            var acumP = netoMensual * mIdx;
             var pctP = Math.round(acumP / maxAcum * 100);
             rowsP += '<div style="display:flex; align-items:center; gap:10px; margin-top:' + (mIdx === 1 ? 0 : 8) + 'px">' +
               '<span style="width:52px; font-size:12px; color:var(--ink-faint)">Mes ' + mIdx + '</span>' +
@@ -2385,6 +2537,8 @@
         elResumen.innerHTML =
           tile("Iniciativas con evaluación económica", conEvaluacionEconomica, list.length + " registradas en total") +
           tile("Beneficio económico anual", fmtCOP(totales.beneficio), "") +
+          tile("Costo de plataforma compartido / año", "−" + fmtCOP(costoPlataformaMensual * 12), plataformaDetalle()) +
+          tile("Beneficio neto anual", fmtCOP(totales.beneficio - costoPlataformaMensual * 12), "") +
           tile("Capacidad liberada anual", fmtHoras(totales.horasLiberadas), "") +
           tile("CAPEX requerido", fmtCOP(totales.capex), "") +
           tile("Iniciativas en ejecución", totales.enEjecucion, "");
@@ -2397,7 +2551,9 @@
         } else {
           var texto = "Las iniciativas con información económica registrada representan actualmente un " +
             "beneficio anual consolidado de " + fmtCOP(totales.beneficio) + " y una capacidad liberada de " +
-            fmtHoras(totales.horasLiberadas) + " al año. ";
+            fmtHoras(totales.horasLiberadas) + " al año. Descontando el costo de plataforma compartido (" +
+            plataformaDetalle() + ", " + fmtCOP(costoPlataformaMensual * 12) + " al año), el beneficio neto es de " +
+            fmtCOP(totales.beneficio - costoPlataformaMensual * 12) + " al año. ";
           texto += totales.capex > 0
             ? "El portafolio requiere una inversión de capital de " + fmtCOP(totales.capex) + "."
             : "Las iniciativas registradas actualmente no requieren inversión de capital.";
@@ -2414,7 +2570,22 @@
           tile("Pendiente de información", evalCounts["Pendiente de información"], "");
       }
 
-      var enTramite = list.filter(function (it) { return it.estado === "En ejecución"; });
+      /* Paneles 03 y 04: iniciativas con caso económico + iniciativas del backlog con ese estado (sin duplicar por ficha) */
+      function conBacklog(estado) {
+        var econ = list.filter(function (it) { return it.estado === estado; });
+        var ids = econ.map(function (it) { return it.id; });
+        BACKLOG.forEach(function (r) {
+          if (r.estado !== estado || (r.fichaId && ids.indexOf(r.fichaId) !== -1)) return;
+          econ.push({ nombre: r.nombre, area: r.area, backlog: r });
+        });
+        return econ;
+      }
+      function detalleHtml(it) {
+        var b = it.backlog || BACKLOG.filter(function (r) { return r.fichaId === it.id; })[0];
+        if (!b) return "—";
+        return (b.avance != null ? '<b>' + b.avance + '%</b> · ' : '') + (b.nota || "—");
+      }
+      var enTramite = conBacklog("En ejecución");
       var panel2Badge = document.getElementById("panel2-badge");
       var panel2Body = document.getElementById("panel2-body");
       if (panel2Badge && panel2Body) {
@@ -2427,19 +2598,20 @@
           panel2Badge.textContent = enTramite.length + (enTramite.length === 1 ? " activa" : " activas");
           var rows2 = "";
           enTramite.forEach(function (it) {
-            var r2 = EconEngine.evaluar(it);
+            var r2 = it.backlog ? { datosInsuficientes: true } : EconEngine.evaluar(it);
             rows2 += '<tr>' +
               '<td>' + it.nombre + '</td>' +
               '<td>' + (it.area || "—") + '</td>' +
               '<td>' + (it.responsable || "—") + '</td>' +
+              '<td style="font-size:12.5px; color:var(--ink-muted)">' + detalleHtml(it) + '</td>' +
               '<td class="num">' + (r2.datosInsuficientes ? "—" : fmtCOP(r2.beneficioMensual)) + '</td>' +
               '</tr>';
           });
-          panel2Body.innerHTML = '<div class="table-wrap" style="border:none; border-radius:0"><table class="data-table"><thead><tr><th>Iniciativa</th><th>Área</th><th>Responsable</th><th class="num">Beneficio/mes</th></tr></thead><tbody>' + rows2 + '</tbody></table></div>';
+          panel2Body.innerHTML = '<div class="table-wrap" style="border:none; border-radius:0"><table class="data-table"><thead><tr><th>Iniciativa</th><th>Área</th><th>Responsable</th><th>Avance</th><th class="num">Beneficio/mes</th></tr></thead><tbody>' + rows2 + '</tbody></table></div>';
         }
       }
 
-      var finalizadas = list.filter(function (it) { return it.estado === "Finalizada"; });
+      var finalizadas = conBacklog("Finalizada");
       var panel3Badge = document.getElementById("panel3-badge");
       var panel3Body = document.getElementById("panel3-body");
       if (panel3Badge && panel3Body) {
@@ -2452,7 +2624,7 @@
           panel3Badge.textContent = finalizadas.length + (finalizadas.length === 1 ? " cerrada" : " cerradas");
           var rows3 = "";
           finalizadas.forEach(function (it) {
-            var r3 = EconEngine.evaluar(it);
+            var r3 = it.backlog ? { datosInsuficientes: true } : EconEngine.evaluar(it);
             rows3 += '<tr>' +
               '<td>' + it.nombre + '</td>' +
               '<td>' + (it.area || "—") + '</td>' +
