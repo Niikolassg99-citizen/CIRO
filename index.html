@@ -25,24 +25,24 @@
     --ct-rojo: #EE2C37;
     --ct-rojo-texto: #C4192B;
     --ct-rojo-oscuro: #9A1422;
-    --axis-1: #0C7DB0;
-    --axis-2: #A66A00;
-    --axis-3: #C0392B;
-    --axis-4: #1E8F5F;
-    --axis-5: #6B4FA0;
-    --axis-6: #128C82;
-    --pmo-legal: #A67C1E;
-    --pmo-fin: #1F5C99;
-    --pmo-eff: #2F7A4F;
+    --axis-1: #072A30;
+    --axis-2: #EE2C37;
+    --axis-3: #384F54;
+    --axis-4: #C4192B;
+    --axis-5: #66797D;
+    --axis-6: #9A1422;
+    --pmo-legal: #C4192B;
+    --pmo-fin: #072A30;
+    --pmo-eff: #66797D;
 
-    --rank-critica: #A5312A;
-    --rank-alta: #B15A2A;
-    --rank-backlog: #4B6584;
-    --rank-none: #8A8F98;
+    --rank-critica: #C4192B;
+    --rank-alta: #072A30;
+    --rank-backlog: #384F54;
+    --rank-none: #66797D;
     --status-ok: #1E8F5F;
     --status-warn: #A66A00;
-    --status-pending: #8A8F98;
-    --status-blocked: #A5312A;
+    --status-pending: #66797D;
+    --status-blocked: #C4192B;
   }
 
   html { background: var(--bg-1); }
@@ -284,14 +284,14 @@
     display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px;
     font-size: 11px; font-weight: 700; letter-spacing: .3px; white-space: nowrap;
   }
-  .badge--critica { background: rgba(165,49,42,0.12); color: var(--rank-critica); }
-  .badge--alta { background: rgba(177,90,42,0.12); color: var(--rank-alta); }
-  .badge--backlog { background: rgba(75,101,132,0.12); color: var(--rank-backlog); }
-  .badge--none { background: rgba(138,143,152,0.14); color: var(--rank-none); }
+  .badge--critica { background: rgba(196,25,43,0.10); color: var(--rank-critica); }
+  .badge--alta { background: rgba(7,42,48,0.09); color: var(--rank-alta); }
+  .badge--backlog { background: rgba(56,79,84,0.10); color: var(--rank-backlog); }
+  .badge--none { background: rgba(102,121,125,0.12); color: var(--rank-none); }
   .badge--ok { background: rgba(30,143,95,0.12); color: var(--status-ok); }
   .badge--warn { background: rgba(166,106,0,0.12); color: var(--status-warn); }
-  .badge--pending { background: rgba(138,143,152,0.14); color: var(--status-pending); }
-  .badge--blocked { background: rgba(165,49,42,0.12); color: var(--status-blocked); }
+  .badge--pending { background: rgba(102,121,125,0.12); color: var(--status-pending); }
+  .badge--blocked { background: rgba(196,25,43,0.10); color: var(--status-blocked); }
   .badge--tie { background: rgba(238,44,55,0.14); color: var(--ct-rojo-texto); }
 
   .table-wrap { overflow-x: auto; border: 1px solid var(--border-soft); border-radius: 12px; background: var(--surface); }
@@ -520,7 +520,7 @@
               de procesos.</p>
           </div>
           <div class="card">
-            <div class="card-eyebrow" style="color:var(--pmo-legal)">Dinámica</div>
+            <div class="card-eyebrow" style="color:var(--axis-3)">Dinámica</div>
             <p><b style="color:var(--ink)">Cómo CIRO mueve las iniciativas.</b> Recibe, evalúa, prioriza,
               asigna, ejecuta, hace seguimiento, decide y mide resultados.</p>
           </div>
